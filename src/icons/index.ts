@@ -22,6 +22,7 @@ import { ReactComponent as ChevronUpIcon } from "./chevron-up.svg?react";
 import { ReactComponent as CloseLineIcon } from "./close-line.svg?react";
 import { ReactComponent as CloseIcon } from "./close.svg?react";
 import { ReactComponent as CopyIcon } from "./copy.svg?react";
+import { DownIcon, FilterIcon, UpDownIcon, UpIcon } from "./CustomIcon";
 import { ReactComponent as DocsIcon } from "./docs.svg?react";
 import { ReactComponent as DollarLineIcon } from "./dollar-line.svg?react";
 import { ReactComponent as DownloadIcon } from "./download.svg?react";
@@ -56,9 +57,8 @@ import { ReactComponent as UserCircleIcon } from "./user-circle.svg?react";
 import { ReactComponent as UserIcon } from "./user-line.svg?react";
 import { ReactComponent as VideoIcon } from "./videos.svg?react";
 
+
 export {
-  AlertHexaIcon, AlertIcon, AngleDownIcon, AngleLeftIcon,
-  AngleRightIcon, AngleUpIcon, ArrowDownIcon,
-  ArrowRightIcon, ArrowUpIcon, AudioIcon, BoltIcon, BoxCubeIcon, BoxIcon, BoxIconLine, CalenderIcon, ChatIcon, CheckCircleIcon, CheckLineIcon, ChevronDownIcon, ChevronLeftIcon, ChevronUpIcon, CloseIcon, CloseLineIcon, CopyIcon, DocsIcon, DollarLineIcon, DownloadIcon, EnvelopeIcon, ErrorHexaIcon, ErrorIcon, EyeCloseIcon, EyeIcon, FileIcon, FolderIcon, GridIcon, GroupIcon, HorizontaLDots, InfoIcon, ListIcon, LockIcon, MailIcon, MoreDotIcon, OrderIcon, PageIcon, PaperPlaneIcon, PencilIcon, PieChartIcon, PlugInIcon, PlusIcon, ShootingStarIcon, TableIcon, TaskIcon, TimeIcon, TrashBinIcon, UserCircleIcon, UserIcon, VideoIcon
+  AlertHexaIcon, AlertIcon, AngleDownIcon, AngleLeftIcon, AngleRightIcon, AngleUpIcon, ArrowDownIcon, ArrowRightIcon, ArrowUpIcon, AudioIcon, BoltIcon, BoxCubeIcon, BoxIcon, BoxIconLine, CalenderIcon, ChatIcon, CheckCircleIcon, CheckLineIcon, ChevronDownIcon, ChevronLeftIcon, ChevronUpIcon, CloseIcon, CloseLineIcon, CopyIcon, DocsIcon, DollarLineIcon, DownIcon, DownloadIcon, EnvelopeIcon, ErrorHexaIcon, ErrorIcon, EyeCloseIcon, EyeIcon, FileIcon, FilterIcon, FolderIcon, GridIcon, GroupIcon, HorizontaLDots, InfoIcon, ListIcon, LockIcon, MailIcon, MoreDotIcon, OrderIcon, PageIcon, PaperPlaneIcon, PencilIcon, PieChartIcon, PlugInIcon, PlusIcon, ShootingStarIcon, TableIcon, TaskIcon, TimeIcon, TrashBinIcon, UpDownIcon, UpIcon, UserCircleIcon, UserIcon, VideoIcon
 };
 
