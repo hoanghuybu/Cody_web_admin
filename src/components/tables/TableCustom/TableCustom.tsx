@@ -1,3 +1,7 @@
+import moment from "moment";
+import { useState } from "react";
+import Checkbox from "../../form/input/Checkbox";
+import Badge from "../../ui/badge/Badge";
 import {
   Table,
   TableBody,
@@ -5,10 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "../../ui/table";
-
-import { useState } from "react";
-import Badge from "../../ui/badge/Badge";
 import Pagination from "../../ui/table/Pagination";
+
+interface CustomTableProps {
+  onSelectChange?: (selectedIds: number[]) => void;
+}
 
 interface Order {
   id: number;
@@ -17,14 +22,11 @@ interface Order {
     name: string;
     role: string;
   };
-  projectName: string;
-  team: {
-    images: string[];
-  };
+  productName: string;
   status: string;
   budget: string;
+  date: string;
 }
-
 const generateData = (count: number): Order[] => {
   return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
@@ -33,23 +35,43 @@ const generateData = (count: number): Order[] => {
       name: `User ${i + 1}`,
       role: i % 2 === 0 ? "Developer" : "Designer",
     },
-    projectName: `Project ${i + 1}`,
-    team: {
-      images: ["/images/user/user-22.jpg", "/images/user/user-23.jpg"],
-    },
+    productName: `Project ${i + 1}`,
+    date: moment().subtract(i, "days").format("YYYY-MM-DD"),
     budget: `${(Math.random() * 10 + 1).toFixed(1)}K`,
-    status: i % 3 === 0 ? "Pending" : i % 2 === 0 ? "Active" : "Cancel",
+    status: i % 3 === 0 ? "Pending" : i % 2 === 0 ? "Active" : "Active",
   }));
 };
 
 const tableData = generateData(25);
 
-export default function TableCustom() {
+export default function TableCustom(props: CustomTableProps) {
+  const { onSelectChange } = props;
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10); // ✅ Bạn có thể cho phép chỉnh từ props nếu muốn
+  const [pageSize] = useState(10);
 
   const startIndex = (currentPage - 1) * pageSize;
   const currentData = tableData.slice(startIndex, startIndex + pageSize);
+
+  // Checkbox Logic
+  const isAllSelected = selectedRows.length === tableData.length;
+
+  const handleSelectAll = (checked: boolean) => {
+    const newSelected = checked ? tableData.map((o) => o.id) : [];
+    setSelectedRows(newSelected);
+    onSelectChange?.(newSelected);
+  };
+
+  const handleRowSelect = (id: number, checked: boolean) => {
+    const newSelected = checked
+      ? [...selectedRows, id]
+      : selectedRows.filter((item) => item !== id);
+    setSelectedRows(newSelected);
+    onSelectChange?.(newSelected);
+  };
+
+  // Order By Column Logic
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -57,23 +79,26 @@ export default function TableCustom() {
           {/* Table Header */}
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                User
+              <TableCell isHeader className="px-4 py-3">
+                <Checkbox checked={isAllSelected} onChange={handleSelectAll} />
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Project Name
+                Customer
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Team
+                Product Name
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Created Date
               </TableCell>
               <TableCell
                 isHeader
@@ -85,7 +110,7 @@ export default function TableCustom() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Budget
+                Price Range
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -94,6 +119,12 @@ export default function TableCustom() {
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {currentData.map((order) => (
               <TableRow key={order.id}>
+                <TableCell className="px-4 py-3">
+                  <Checkbox
+                    checked={selectedRows.includes(order.id)}
+                    onChange={(checked) => handleRowSelect(order.id, checked)}
+                  />
+                </TableCell>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
@@ -115,9 +146,12 @@ export default function TableCustom() {
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {order.projectName}
+                  {order.productName}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  06-08-2025
+                </TableCell>
+                {/* <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <div className="flex -space-x-2">
                     {order.team.images.map((teamImage, index) => (
                       <div
@@ -134,7 +168,7 @@ export default function TableCustom() {
                       </div>
                     ))}
                   </div>
-                </TableCell>
+                </TableCell> */}
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"

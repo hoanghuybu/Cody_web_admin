@@ -1,0 +1,280 @@
+import { DataType, KPIData, Staff, Task } from "~/type";
+
+export const data: DataType[] = [
+  {
+    key: "1",
+    customerName: "Nguyễn Văn A",
+    productName: "Laptop Dell XPS 13",
+    createdDate: new Date("2025-08-01"),
+    status: {
+      code: "pending",
+      name: "Pending",
+      color: "#FFF3CD",
+      textColor: "#856404",
+    },
+    priceRange: "20.000.000 - 25.000.000",
+  },
+  {
+    key: "2",
+    customerName: "Trần Thị B",
+    productName: "iPhone 15 Pro Max",
+    createdDate: new Date("2025-08-05"),
+    status: {
+      code: "approved",
+      name: "Approved",
+      color: "#D4EDDA",
+      textColor: "#155724",
+    },
+    priceRange: "30.000.000 - 35.000.000",
+  },
+  {
+    key: "3",
+    customerName: "Lê Văn C",
+    productName: "Samsung Galaxy S24 Ultra",
+    createdDate: new Date("2025-08-07"),
+    status: {
+      code: "rejected",
+      name: "Rejected",
+      color: "#F8D7DA",
+      textColor: "#721C24",
+    },
+    priceRange: "25.000.000 - 28.000.000",
+  },
+  {
+    key: "4",
+    customerName: "Phạm Thị D",
+    productName: "MacBook Air M3",
+    createdDate: new Date("2025-08-09"),
+    status: {
+      code: "shipped",
+      name: "Shipped",
+      color: "#CCE5FF",
+      textColor: "#004085",
+    },
+    priceRange: "28.000.000 - 32.000.000",
+  },
+  {
+    key: "5",
+    customerName: "Nguyễn Văn E",
+    productName: "Laptop Dell XPS 13",
+    createdDate: new Date("2025-08-01"),
+    status: {
+      code: "pending",
+      name: "Pending",
+      color: "#FFF3CD",
+      textColor: "#856404",
+    },
+    priceRange: "20.000.000 - 25.000.000",
+  },
+  {
+    key: "6",
+    customerName: "Trần Thị F",
+    productName: "iPhone 15 Pro Max",
+    createdDate: new Date("2025-08-05"),
+    status: {
+      code: "approved",
+      name: "Approved",
+      color: "#D4EDDA",
+      textColor: "#155724",
+    },
+    priceRange: "30.000.000 - 35.000.000",
+  },
+  {
+    key: "7",
+    customerName: "Lê Văn G",
+    productName: "Samsung Galaxy S24 Ultra",
+    createdDate: new Date("2025-08-07"),
+    status: {
+      code: "rejected",
+      name: "Rejected",
+      color: "#F8D7DA",
+      textColor: "#721C24",
+    },
+    priceRange: "25.000.000 - 28.000.000",
+  },
+  {
+    key: "8",
+    customerName: "Phạm Thị H",
+    productName: "MacBook Air M3",
+    createdDate: new Date("2025-08-09"),
+    status: {
+      code: "shipped",
+      name: "Shipped",
+      color: "#CCE5FF",
+      textColor: "#004085",
+    },
+    priceRange: "28.000.000 - 32.000.000",
+  },
+];
+
+export const initialStaffData: Staff[] = [
+  {
+    id: "1",
+    name: "John Doe",
+    email: "john.doe@company.com",
+    phone: "+1234567890",
+    role: "Admin",
+    status: "Active",
+    avatarUrl:
+      "https://images.pexels.com/photos/697509/pexels-photo-697509.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    createdAt: "2024-01-15T10:00:00Z",
+    updatedAt: "2024-01-15T10:00:00Z",
+  },
+  {
+    id: "2",
+    name: "Jane Smith",
+    email: "jane.smith@company.com",
+    phone: "+1234567891",
+    role: "Management Staff",
+    status: "Active",
+    avatarUrl:
+      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    createdAt: "2024-01-10T09:00:00Z",
+    updatedAt: "2024-01-10T09:00:00Z",
+  },
+  {
+    id: "3",
+    name: "Mike Johnson",
+    email: "mike.johnson@company.com",
+    phone: "+1234567892",
+    role: "Sales Staff",
+    status: "Active",
+    avatarUrl:
+      "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    createdAt: "2024-01-12T11:00:00Z",
+    updatedAt: "2024-01-12T11:00:00Z",
+  },
+  {
+    id: "4",
+    name: "Sarah Wilson",
+    email: "sarah.wilson@company.com",
+    phone: "+1234567893",
+    role: "Sales Staff",
+    status: "Inactive",
+    avatarUrl:
+      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    createdAt: "2024-01-08T14:00:00Z",
+    updatedAt: "2024-01-20T16:00:00Z",
+  },
+  {
+    id: "5",
+    name: "David Brown",
+    email: "david.brown@company.com",
+    phone: "+1234567894",
+    role: "Management Staff",
+    status: "Active",
+    avatarUrl:
+      "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    createdAt: "2024-01-05T13:00:00Z",
+    updatedAt: "2024-01-05T13:00:00Z",
+  },
+];
+
+export const initialTaskData: Task[] = [
+  {
+    id: "1",
+    title: "Update customer database",
+    description:
+      "Review and update customer contact information in the CRM system",
+    assignedTo: "2",
+    dueDate: "2025-01-25T00:00:00Z",
+    status: "In Progress",
+    createdAt: "2025-01-15T10:00:00Z",
+    updatedAt: "2025-01-15T10:00:00Z",
+  },
+  {
+    id: "2",
+    title: "Prepare monthly sales report",
+    description:
+      "Compile sales data and create comprehensive monthly report for management",
+    assignedTo: "3",
+    dueDate: "2025-01-30T00:00:00Z",
+    status: "New",
+    createdAt: "2025-01-16T09:00:00Z",
+    updatedAt: "2025-01-16T09:00:00Z",
+  },
+  {
+    id: "3",
+    title: "Client follow-up calls",
+    description:
+      "Make follow-up calls to potential clients from last week's leads",
+    assignedTo: "3",
+    dueDate: "2025-01-22T00:00:00Z",
+    status: "Completed",
+    createdAt: "2025-01-10T11:00:00Z",
+    updatedAt: "2025-01-18T15:30:00Z",
+  },
+  {
+    id: "4",
+    title: "System maintenance",
+    description: "Perform routine maintenance on the internal systems",
+    assignedTo: "1",
+    dueDate: "2025-01-28T00:00:00Z",
+    status: "In Progress",
+    createdAt: "2025-01-14T08:00:00Z",
+    updatedAt: "2025-01-14T08:00:00Z",
+  },
+  {
+    id: "5",
+    title: "Staff training session",
+    description:
+      "Organize and conduct training session for new sales techniques",
+    assignedTo: "5",
+    dueDate: "2025-02-05T00:00:00Z",
+    status: "New",
+    createdAt: "2025-01-17T12:00:00Z",
+    updatedAt: "2025-01-17T12:00:00Z",
+  },
+  {
+    id: "6",
+    title: "Inventory audit",
+    description: "Conduct quarterly inventory audit and update records",
+    assignedTo: "2",
+    dueDate: "2025-01-31T00:00:00Z",
+    status: "New",
+    createdAt: "2025-01-18T10:00:00Z",
+    updatedAt: "2025-01-18T10:00:00Z",
+  },
+];
+
+export const initialKPIData: Record<string, KPIData> = {
+  "1": {
+    staffId: "1",
+    ordersProcessed: 45,
+    revenue: 12500,
+    avgProcessingTime: 2.3,
+    completionRate: 95,
+    monthlyData: [
+      { month: "Jan", orders: 35, revenue: 8500 },
+      { month: "Feb", orders: 42, revenue: 10200 },
+      { month: "Mar", orders: 38, revenue: 9800 },
+      { month: "Apr", orders: 45, revenue: 12500 },
+    ],
+  },
+  "2": {
+    staffId: "2",
+    ordersProcessed: 38,
+    revenue: 9800,
+    avgProcessingTime: 2.8,
+    completionRate: 88,
+    monthlyData: [
+      { month: "Jan", orders: 28, revenue: 6500 },
+      { month: "Feb", orders: 35, revenue: 8200 },
+      { month: "Mar", orders: 32, revenue: 7800 },
+      { month: "Apr", orders: 38, revenue: 9800 },
+    ],
+  },
+  "3": {
+    staffId: "3",
+    ordersProcessed: 52,
+    revenue: 15200,
+    avgProcessingTime: 2.1,
+    completionRate: 92,
+    monthlyData: [
+      { month: "Jan", orders: 42, revenue: 11500 },
+      { month: "Feb", orders: 48, revenue: 13200 },
+      { month: "Mar", orders: 45, revenue: 12800 },
+      { month: "Apr", orders: 52, revenue: 15200 },
+    ],
+  },
+};

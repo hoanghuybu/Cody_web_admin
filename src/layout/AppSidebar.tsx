@@ -28,6 +28,16 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
+    icon: <UserCircleIcon />,
+    name: "Staffs Management",
+    path: "/staffs-management",
+    subItems: [
+      { name: "KPI Dashboard", path: "/", pro: false },
+      { name: "Individual Staff Profile", path: "/blank", pro: false },
+      { name: "Task Assignment", path: "/tasks", pro: false },
+    ],
+  },
+  {
     icon: <OrderIcon />,
     name: "Order Management",
     path: "/orders-management",
@@ -38,14 +48,9 @@ const navItems: NavItem[] = [
     path: "/products-management",
   },
   {
-    icon: <UserCircleIcon />,
-    name: "User Management",
-    path: "/users-management",
-  },
-  {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    // subItems: [{ name: "Ecommerce", path: "/", pro: false }],
   },
   {
     icon: <CalenderIcon />,

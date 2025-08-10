@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2022",
@@ -12,13 +13,39 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
+    "jsx": "react-jsx",
 
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "alwaysStrict": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "outDir": "build",
+    "strictNullChecks": false,
+    "sourceMap": false,
+    "preserveConstEnums": true,
+    "noImplicitReturns": false,
+    "downlevelIteration": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/index.d.ts"
+    ]
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts"],
+  "files": [
+    "./src/types.d.ts"
+  ]
 }
