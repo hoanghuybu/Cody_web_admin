@@ -9,9 +9,10 @@ import BarChart from "./pages/Charts/BarChart";
 import LineChart from "./pages/Charts/LineChart";
 import Home from "./pages/Dashboard/Home";
 import FormElements from "./pages/Forms/FormElements";
-import OrdersManagement from "./pages/OrdersManagement";
+import OrdersManagement from "./pages/OrderManagement/OrdersManagement";
 import NotFound from "./pages/OtherPage/NotFound";
-import ProductsManagement from "./pages/ProductsManagement";
+import ProductsManagement from "./pages/ProductManagement/ProductsManagement";
+import TaskManagement from "./pages/StaffManagement/Task/TaskManagement";
 import BasicTables from "./pages/Tables/BasicTables";
 import Alerts from "./pages/UiElements/Alerts";
 import Avatars from "./pages/UiElements/Avatars";
@@ -45,9 +46,11 @@ export default function App() {
 
             <Route
               index
-              path="/users-management"
+              path="/staffs-management"
               element={<UsersManagement />}
             />
+
+            <Route index path="/tasks" element={<TaskManagement />} />
 
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />
