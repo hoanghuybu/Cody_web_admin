@@ -56,7 +56,8 @@ export interface ApiResponse<T> {
 
 export interface Staff {
     id: string;
-    fullName: string;
+    name?: string;
+    fullName?: string;
     email: string;
     phoneNumber?: string;
     role: 'Admin' | 'Management Staff' | 'Sales Staff';
