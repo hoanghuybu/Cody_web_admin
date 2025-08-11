@@ -17,6 +17,7 @@ import {
   Typography,
 } from "antd";
 import React, { useMemo, useState } from "react";
+import ComponentCard from "~/components/common/ComponentCard";
 import { initialStaffData, initialTaskData } from "~/dummy";
 import { Staff, Task } from "~/type";
 import KanbanBoard from "./KanbanBoard";
@@ -88,7 +89,7 @@ const TaskManagement: React.FC = () => {
     return filteredTasks.map((task) => ({
       ...task,
       assignedToName:
-        staff.find((s) => s.id === task.assignedTo)?.name || "Unknown",
+        staff.find((s) => s.id === task.assignedTo)?.fullName || "Unknown",
     }));
   }, [filteredTasks, staff]);
 
@@ -144,140 +145,166 @@ const TaskManagement: React.FC = () => {
   const statusCounts = getStatusCounts();
 
   return (
-    <div style={{ padding: "0 24px" }}>
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <Col>
-          <Title level={2} style={{ margin: 0 }}>
-            Task Management
-          </Title>
-          <Text type="secondary">Assign and track tasks across your team</Text>
-        </Col>
-        <Col>
-          <Space>
-            <Segmented
-              value={viewMode}
-              onChange={(value) => setViewMode(value as "table" | "kanban")}
-              options={[
-                { label: "Table", value: "table", icon: <TableOutlined /> },
-                {
-                  label: "Kanban",
-                  value: "kanban",
-                  icon: <AppstoreOutlined />,
-                },
-              ]}
-            />
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setIsCreateModalOpen(true)}
-              size="large"
-            >
-              Add Task
-            </Button>
-          </Space>
-        </Col>
-      </Row>
+    <div>
+      <ComponentCard
+        title={
+          <Row
+            justify="space-between"
+            align="middle"
+            style={{ marginBottom: 24 }}
+          >
+            <Col>
+              <Title level={2} style={{ margin: 0 }}>
+                Task Management
+              </Title>
+              <Text type="secondary">
+                Assign and track tasks across your team
+              </Text>
+            </Col>
+            <Col>
+              <Space>
+                <Segmented
+                  value={viewMode}
+                  onChange={(value) => setViewMode(value as "table" | "kanban")}
+                  options={[
+                    { label: "Table", value: "table", icon: <TableOutlined /> },
+                    {
+                      label: "Kanban",
+                      value: "kanban",
+                      icon: <AppstoreOutlined />,
+                    },
+                  ]}
+                />
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => setIsCreateModalOpen(true)}
+                  size="large"
+                >
+                  Add Task
+                </Button>
+              </Space>
+            </Col>
+          </Row>
+        }
+      >
+        <>
+          {/* Status Overview */}
+          <Row gutter={16} style={{ marginBottom: 24 }}>
+            <Col xs={24} sm={6}>
+              <Card size="small">
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      color: "#1890ff",
+                    }}
+                  >
+                    {statusCounts.total}
+                  </div>
+                  <div style={{ color: "#666" }}>Total Tasks</div>
+                </div>
+              </Card>
+            </Col>
+            <Col xs={24} sm={6}>
+              <Card size="small">
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      color: "#1890ff",
+                    }}
+                  >
+                    {statusCounts.new}
+                  </div>
+                  <div style={{ color: "#666" }}>New</div>
+                </div>
+              </Card>
+            </Col>
+            <Col xs={24} sm={6}>
+              <Card size="small">
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      color: "#faad14",
+                    }}
+                  >
+                    {statusCounts.inProgress}
+                  </div>
+                  <div style={{ color: "#666" }}>In Progress</div>
+                </div>
+              </Card>
+            </Col>
+            <Col xs={24} sm={6}>
+              <Card size="small">
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      color: "#52c41a",
+                    }}
+                  >
+                    {statusCounts.completed}
+                  </div>
+                  <div style={{ color: "#666" }}>Completed</div>
+                </div>
+              </Card>
+            </Col>
+          </Row>
 
-      {/* Status Overview */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={6}>
-          <Card size="small">
-            <div style={{ textAlign: "center" }}>
-              <div
-                style={{ fontSize: 24, fontWeight: "bold", color: "#1890ff" }}
+          {/* Filters */}
+          <Row gutter={16} align="middle">
+            <Col flex="auto">
+              <Input
+                placeholder="Search tasks by title or description..."
+                prefix={<SearchOutlined />}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                allowClear
+                size="large"
+              />
+            </Col>
+            <Col>
+              <Select
+                placeholder="All Status"
+                value={selectedStatus}
+                onChange={setSelectedStatus}
+                style={{ width: 150 }}
+                size="large"
+                allowClear
               >
-                {statusCounts.total}
-              </div>
-              <div style={{ color: "#666" }}>Total Tasks</div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={6}>
-          <Card size="small">
-            <div style={{ textAlign: "center" }}>
-              <div
-                style={{ fontSize: 24, fontWeight: "bold", color: "#1890ff" }}
+                <Option value="New">New</Option>
+                <Option value="In Progress">In Progress</Option>
+                <Option value="Completed">Completed</Option>
+              </Select>
+            </Col>
+            <Col>
+              <Select
+                placeholder="All Assignees"
+                value={selectedAssignee}
+                onChange={setSelectedAssignee}
+                style={{ width: 200 }}
+                size="large"
+                allowClear
               >
-                {statusCounts.new}
-              </div>
-              <div style={{ color: "#666" }}>New</div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={6}>
-          <Card size="small">
-            <div style={{ textAlign: "center" }}>
-              <div
-                style={{ fontSize: 24, fontWeight: "bold", color: "#faad14" }}
-              >
-                {statusCounts.inProgress}
-              </div>
-              <div style={{ color: "#666" }}>In Progress</div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={6}>
-          <Card size="small">
-            <div style={{ textAlign: "center" }}>
-              <div
-                style={{ fontSize: 24, fontWeight: "bold", color: "#52c41a" }}
-              >
-                {statusCounts.completed}
-              </div>
-              <div style={{ color: "#666" }}>Completed</div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Filters */}
-      <Card style={{ marginBottom: 24 }}>
-        <Row gutter={16} align="middle">
-          <Col flex="auto">
-            <Input
-              placeholder="Search tasks by title or description..."
-              prefix={<SearchOutlined />}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              allowClear
-              size="large"
-            />
-          </Col>
-          <Col>
-            <Select
-              placeholder="All Status"
-              value={selectedStatus}
-              onChange={setSelectedStatus}
-              style={{ width: 150 }}
-              size="large"
-              allowClear
-            >
-              <Option value="New">New</Option>
-              <Option value="In Progress">In Progress</Option>
-              <Option value="Completed">Completed</Option>
-            </Select>
-          </Col>
-          <Col>
-            <Select
-              placeholder="All Assignees"
-              value={selectedAssignee}
-              onChange={setSelectedAssignee}
-              style={{ width: 200 }}
-              size="large"
-              allowClear
-            >
-              {staff
-                .filter((s) => s.status === "Active")
-                .map((member) => (
-                  <Option key={member.id} value={member.id}>
-                    {member.name}
-                  </Option>
-                ))}
-            </Select>
-          </Col>
-        </Row>
-      </Card>
-
+                {staff
+                  .filter((s) => s.status === "Active")
+                  .map((member) => (
+                    <Option key={member.id} value={member.id}>
+                      {member.fullName}
+                    </Option>
+                  ))}
+              </Select>
+            </Col>
+          </Row>
+        </>
+      </ComponentCard>
+      <div className="w-full m-1.5"></div>
       {/* Task Views */}
       {viewMode === "table" ? (
         <TaskTable tasks={tasksWithNames} onStatusChange={handleStatusChange} />

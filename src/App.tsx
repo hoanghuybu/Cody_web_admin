@@ -12,6 +12,8 @@ import FormElements from "./pages/Forms/FormElements";
 import OrdersManagement from "./pages/OrderManagement/OrdersManagement";
 import NotFound from "./pages/OtherPage/NotFound";
 import ProductsManagement from "./pages/ProductManagement/ProductsManagement";
+import AccountManagement from "./pages/StaffManagement/Account/AccountManagement";
+import StaffProfile from "./pages/StaffManagement/StaffProfile";
 import TaskManagement from "./pages/StaffManagement/Task/TaskManagement";
 import BasicTables from "./pages/Tables/BasicTables";
 import Alerts from "./pages/UiElements/Alerts";
@@ -49,6 +51,14 @@ export default function App() {
               path="/staffs-management"
               element={<UsersManagement />}
             />
+
+            <Route
+              index
+              path="/account-management"
+              element={<AccountManagement />}
+            />
+
+            <Route index path="/staffs/:id" element={<StaffProfile />} />
 
             <Route index path="/tasks" element={<TaskManagement />} />
 
