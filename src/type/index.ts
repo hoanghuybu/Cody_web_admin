@@ -20,17 +20,7 @@ export interface DataType {
     priceRange: string
 }
 
-export interface Staff {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-    role: 'Admin' | 'Management Staff' | 'Sales Staff';
-    status: 'Active' | 'Inactive';
-    avatarUrl?: string;
-    createdAt: string;
-    updatedAt: string;
-}
+
 
 export interface Task {
     id: string;
@@ -62,4 +52,26 @@ export interface ApiResponse<T> {
     total?: number;
     page?: number;
     limit?: number;
+}
+
+export interface Staff {
+    id: string;
+    fullName: string;
+    email: string;
+    phoneNumber?: string;
+    role: 'Admin' | 'Management Staff' | 'Sales Staff';
+    status: 'Active' | 'Inactive';
+    createdAt: string;
+    lastLogin?: string;
+    phone?: string
+    avatarUrl?: string
+    updatedAt?: string
+}
+
+export interface StaffFormData {
+    fullName: string;
+    email: string;
+    password: string;
+    phoneNumber: string;
+    role: 'Admin' | 'Management Staff' | 'Sales Staff';
 }
