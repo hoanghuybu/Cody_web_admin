@@ -1,4 +1,5 @@
 
-import { getColumns } from "./TableColumnsOrders"
+import { getColumnsOrders } from "./TableColumnsOrders"
+import { getColumnsProducts } from "./TableColumnsProducts"
 
-export { getColumns }
+export { getColumnsOrders, getColumnsProducts }
