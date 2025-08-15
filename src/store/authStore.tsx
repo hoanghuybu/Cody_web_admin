@@ -1,5 +1,14 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useNavigate } from "react-router";
+import { ApiException } from "~/@core/dto";
+import { LoginDto, UserSessionDto } from "~/dto/auth/login.dto";
+import { authService, toastService } from "~/services";
 
 const AuthStoreContext = React.createContext(null);
 
@@ -17,14 +26,27 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
   const [logged, setLogged] = React.useState(
     authState.isAuthenticated ? true : false
   );
+  const [userInfo, setUserInfo] = useState<UserSessionDto>(undefined);
 
-  const login = useCallback(async (user: any, token: string) => {
-    setIsLoading(true);
-    // Simulate an API call to authenticate the user
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setAuthState({ isAuthenticated: true, user, token });
-    setIsLoading(false);
-  }, []);
+  const login = useCallback(
+    async (body: LoginDto, pathNavigate: string = "/") => {
+      setIsLoading(true);
+      try {
+        const res = await authService.login(body);
+        if (res.data.token) {
+          setLogged(true);
+          localStorage.setItem("accessToken", `${res.data.token}`);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+          setUserInfo(res.data.user);
+          navigate(pathNavigate);
+        }
+      } catch (error) {
+        toastService.handleError(error as ApiException);
+      }
+      setIsLoading(false);
+    },
+    [navigate]
+  );
 
   const logout = useCallback(() => {
     setAuthState({ isAuthenticated: false, user: null, token: null });
@@ -46,11 +68,11 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsFirstLoading(false);
   }, [authState.isAuthenticated]);
 
-  //   useEffect(() => {
-  //     if (!logged) {
-  //       navigate("/signin");
-  //     }
-  //   }, [logged, navigate]);
+  useEffect(() => {
+    if (!logged) {
+      navigate("/signin");
+    }
+  }, [logged, navigate]);
 
   const value = useMemo(
     () => ({
@@ -58,6 +80,7 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
       isFirstLoading,
       isLoading,
       logged,
+      userInfo,
       authenticate,
       login: (user: any, token: string) => {
         login(user, token);
@@ -77,6 +100,7 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
       isFirstLoading,
       authenticate,
       logged,
+      userInfo,
     ]
   );
 

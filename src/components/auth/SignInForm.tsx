@@ -1,14 +1,34 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { useAuthStore } from "~/store/authStore";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
-import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
+import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { login, isLoading } = useAuthStore();
   const [isChecked, setIsChecked] = useState(false);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({
+      email: email,
+      password: password,
+    });
+    login({
+      email: email,
+      password: password,
+    });
+  };
+  // eslint-disable-next-line no-extra-boolean-cast
+  if (!!isLoading) {
+    return <div className="flex flex-col flex-1">Loading..</div>;
+  }
   return (
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
@@ -83,13 +103,17 @@ export default function SignInForm() {
                 </span>
               </div>
             </div>
-            <form>
+            <form onSubmit={handleLogin}>
               <div className="space-y-6">
                 <div>
                   <Label>
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" />
+                  <Input
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
+                    placeholder="info@gmail.com"
+                  />
                 </div>
                 <div>
                   <Label>
@@ -98,6 +122,8 @@ export default function SignInForm() {
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
                     />
                     <span
@@ -127,24 +153,24 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
+                  <Button type="submit" className="w-full" size="sm">
                     Sign in
                   </Button>
                 </div>
               </div>
             </form>
 
-            <div className="mt-5">
-              <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                Don&apos;t have an account? {""}
-                <Link
-                  to="/signup"
-                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                >
-                  Sign Up
-                </Link>
-              </p>
-            </div>
+            {/* <div className="mt-5">
+                <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
+                  Don&apos;t have an account? {""}
+                  <Link
+                    to="/signup"
+                    className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                  >
+                    Sign Up
+                  </Link>
+                </p>
+              </div> */}
           </div>
         </div>
       </div>
