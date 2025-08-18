@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { useAuthStore } from "~/store/authStore";
+import useLogin from "~/hooks/auth/useLogin";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Checkbox from "../form/input/Checkbox";
@@ -11,16 +11,12 @@ export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoading } = useAuthStore();
+  const { onLogin, isLoading } = useLogin();
   const [isChecked, setIsChecked] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
-      email: email,
-      password: password,
-    });
-    login({
+    await onLogin({
       email: email,
       password: password,
     });

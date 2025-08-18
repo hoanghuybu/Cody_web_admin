@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { ApiException } from "~/@core/dto";
 import { LoginDto, UserSessionDto } from "~/dto/auth/login.dto";
 import { rootApiService } from "./@common";
@@ -24,13 +25,14 @@ export class AuthService {
         }
     }
 
+
     isAuthenticated(): boolean {
-        const accessToken = localStorage.getItem("accessToken");
+        const accessToken = Cookies.get("accessToken");
         return !!accessToken;
     }
 
     getAccessToken(): string | null {
-        return localStorage.getItem("accessToken");
+        return Cookies.get("accessToken");
     }
 }
 

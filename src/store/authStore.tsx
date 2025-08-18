@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import React, {
   useCallback,
   useContext,
@@ -6,17 +7,25 @@ import React, {
   useState,
 } from "react";
 import { useNavigate } from "react-router";
-import { ApiException } from "~/@core/dto";
-import { LoginDto, UserSessionDto } from "~/dto/auth/login.dto";
-import { authService, toastService } from "~/services";
+import { UserSessionDto } from "~/dto/auth/login.dto";
+import { authService } from "~/services";
 
-const AuthStoreContext = React.createContext(null);
+interface AuthContextType {
+  userInfo: any;
+  login: (account: any) => void;
+  logout: () => void;
+}
+
+const AuthStoreContext = React.createContext<AuthContextType>({
+  userInfo: null,
+  login: () => {},
+  logout: () => {},
+});
 
 const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = React.useState(false);
   const [authState, setAuthState] = React.useState({
     isAuthenticated: false,
     user: null,
@@ -29,23 +38,16 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userInfo, setUserInfo] = useState<UserSessionDto>(undefined);
 
   const login = useCallback(
-    async (body: LoginDto, pathNavigate: string = "/") => {
-      setIsLoading(true);
-      try {
-        const res = await authService.login(body);
-        if (res.data.token) {
-          setLogged(true);
-          localStorage.setItem("accessToken", `${res.data.token}`);
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-          setUserInfo(res.data.user);
-          navigate(pathNavigate);
-        }
-      } catch (error) {
-        toastService.handleError(error as ApiException);
-      }
-      setIsLoading(false);
+    (account: { user: any; accessToken: string; refreshToken: string }) => {
+      console.log({
+        account,
+      });
+      setUserInfo(account.user);
+      Cookies.set("user", JSON.stringify(account.user), { expires: 7 });
+      Cookies.set("token", account.accessToken, { expires: 7 });
+      // Cookies.set("refreshToken", account.refreshToken, { expires: 10000 });
     },
-    [navigate]
+    []
   );
 
   const logout = useCallback(() => {
@@ -56,17 +58,19 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
   const authenticate = useCallback(async () => {
     setIsFirstLoading(true);
     try {
-      // const user = await authService.authenticate();
-      const check = authState.isAuthenticated ? true : false;
-      if (check) {
-        setLogged(true);
+      if (!window.location.pathname.includes("signin")) {
+        const isAuthenticated = await authService.isAuthenticated();
+        const check = isAuthenticated ? true : false;
+        if (check) {
+          setLogged(true);
+        }
       }
     } catch (error) {
       console.error("Authentication failed", error);
       setLogged(false);
     }
     setIsFirstLoading(false);
-  }, [authState.isAuthenticated]);
+  }, []);
 
   useEffect(() => {
     if (!logged) {
@@ -78,30 +82,13 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
     () => ({
       authState,
       isFirstLoading,
-      isLoading,
       logged,
       userInfo,
       authenticate,
-      login: (user: any, token: string) => {
-        login(user, token);
-        navigate("/");
-      },
-      logout: () => {
-        logout();
-        navigate("/signin");
-      },
-    }),
-    [
-      authState,
       login,
       logout,
-      navigate,
-      isLoading,
-      isFirstLoading,
-      authenticate,
-      logged,
-      userInfo,
-    ]
+    }),
+    [authState, login, logout, isFirstLoading, authenticate, logged, userInfo]
   );
 
   return (
