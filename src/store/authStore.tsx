@@ -26,15 +26,9 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const navigate = useNavigate();
-  const [authState, setAuthState] = React.useState({
-    isAuthenticated: false,
-    user: null,
-    token: null,
-  });
+
   const [isFirstLoading, setIsFirstLoading] = React.useState(false);
-  const [logged, setLogged] = React.useState(
-    authState.isAuthenticated ? true : false
-  );
+  const [logged, setLogged] = React.useState(false);
   const [userInfo, setUserInfo] = useState<UserSessionDto>(undefined);
 
   const login = useCallback(
@@ -44,14 +38,17 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
       });
       setUserInfo(account.user);
       Cookies.set("user", JSON.stringify(account.user), { expires: 7 });
-      Cookies.set("token", account.accessToken, { expires: 7 });
+      Cookies.set("accessToken", account.accessToken, { expires: 7 });
       // Cookies.set("refreshToken", account.refreshToken, { expires: 10000 });
     },
     []
   );
 
   const logout = useCallback(() => {
-    setAuthState({ isAuthenticated: false, user: null, token: null });
+    setUserInfo(null);
+    Cookies.remove("user");
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
     navigate("/signin");
   }, [navigate]);
 
@@ -60,6 +57,9 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       if (!window.location.pathname.includes("signin")) {
         const isAuthenticated = authService.isAuthenticated();
+        const userCookie = Cookies.get("user");
+        const parsed = JSON.parse(userCookie);
+        setUserInfo(parsed);
         const check = isAuthenticated ? true : false;
         if (check) {
           setLogged(true);
@@ -73,14 +73,26 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    if (!logged) {
+    const userCookie = Cookies.get("user");
+    try {
+      if (userCookie) {
+        const parsed = JSON.parse(userCookie);
+        setUserInfo(parsed);
+      }
+    } catch (e) {
+      console.log(e);
+      Cookies.remove("user");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!userInfo) {
       navigate("/signin");
     }
-  }, [logged, navigate]);
+  }, [userInfo, navigate]);
 
   const value = useMemo(
     () => ({
-      authState,
       isFirstLoading,
       logged,
       userInfo,
@@ -88,7 +100,7 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
       login,
       logout,
     }),
-    [authState, login, logout, isFirstLoading, authenticate, logged, userInfo]
+    [login, logout, isFirstLoading, authenticate, logged, userInfo]
   );
 
   return (
