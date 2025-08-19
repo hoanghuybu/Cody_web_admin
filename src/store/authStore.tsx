@@ -59,7 +59,7 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsFirstLoading(true);
     try {
       if (!window.location.pathname.includes("signin")) {
-        const isAuthenticated = await authService.isAuthenticated();
+        const isAuthenticated = authService.isAuthenticated();
         const check = isAuthenticated ? true : false;
         if (check) {
           setLogged(true);
