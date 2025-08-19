@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from "react";
-import { Route, Routes } from "react-router";
+import { Route, Routes, useNavigate } from "react-router";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import AppLayout from "./layout/AppLayout";
 import SignIn from "./pages/AuthPages/SignIn";
@@ -28,11 +28,21 @@ import UsersManagement from "./pages/UsersManagement";
 import { useAuthStore } from "./store/authStore";
 
 function AppRouter() {
-  const { authenticate } = useAuthStore();
-
+  const { userInfo } = useAuthStore();
+  const navigate = useNavigate();
   useEffect(() => {
-    authenticate();
-  }, [authenticate]);
+    try {
+      if (!window.location.pathname.includes("signin")) {
+        const check = !userInfo ? true : false;
+        console.log(!!check);
+        if (check) {
+          navigate("/signin");
+        }
+      }
+    } catch (error) {
+      console.error("Authentication failed", error);
+    }
+  }, [userInfo, navigate]);
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ScrollToTop />

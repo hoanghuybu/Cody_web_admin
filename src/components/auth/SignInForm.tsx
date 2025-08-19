@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import useLogin from "~/hooks/auth/useLogin";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
@@ -8,18 +8,19 @@ import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
 
 export default function SignInForm() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { onLogin, isLoading } = useLogin();
   const [isChecked, setIsChecked] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin({
+    await onLogin({
       email: email,
       password: password,
-    });
+    }).then(() => navigate("/"));
   };
   // eslint-disable-next-line no-extra-boolean-cast
   if (!!isLoading) {

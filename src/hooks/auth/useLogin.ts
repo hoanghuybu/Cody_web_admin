@@ -22,7 +22,7 @@ export interface User {
 
 const useLogin = () => {
     const { login } = useAuthStore();
-    const { isPending, isError, data, error, mutate } = useMutation({
+    const { isPending, isError, data, error, mutateAsync } = useMutation({
         mutationFn: (variables: LoginDto) => {
             return rootApiService.post<AuthResponse>(endpoints.login, variables)
         },
@@ -32,6 +32,7 @@ const useLogin = () => {
                 accessToken: res?.data?.token || "",
                 refreshToken: res?.data?.token || "",
             })
+
         }
     })
     return {
@@ -39,7 +40,7 @@ const useLogin = () => {
         isError,
         data,
         error,
-        onLogin: mutate,
+        onLogin: mutateAsync,
     }
 }
 
