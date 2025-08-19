@@ -14,9 +14,9 @@ export default function SignInForm() {
   const { onLogin, isLoading } = useLogin();
   const [isChecked, setIsChecked] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    await onLogin({
+    onLogin({
       email: email,
       password: password,
     });
