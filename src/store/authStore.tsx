@@ -33,9 +33,6 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = useCallback(
     (account: { user: any; accessToken: string; refreshToken: string }) => {
-      console.log({
-        account,
-      });
       setUserInfo(account.user);
       Cookies.set("user", JSON.stringify(account.user), { expires: 7 });
       Cookies.set("accessToken", account.accessToken, { expires: 7 });
@@ -85,11 +82,11 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  useEffect(() => {
-    if (!userInfo) {
-      navigate("/signin");
-    }
-  }, [userInfo, navigate]);
+  // useEffect(() => {
+  //   if (!userInfo) {
+  //     navigate("/signin");
+  //   }
+  // }, [userInfo, navigate]);
 
   const value = useMemo(
     () => ({
