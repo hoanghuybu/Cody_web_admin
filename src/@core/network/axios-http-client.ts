@@ -5,6 +5,7 @@ import Axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
+import Cookies from "js-cookie";
 import { EHttpStatus } from "../constants";
 import { ApiException, IObject, IObjectPromise } from "../dto";
 
@@ -45,9 +46,11 @@ export class AxiosHttpClient {
       (error) => {
         if (error.response?.status === 401) {
           // Clear token và redirect về login
-          localStorage.removeItem("ACCESS_TOKEN");
+          Cookies.remove("user");
+          Cookies.remove("accessToken");
+          Cookies.remove("refreshToken");
           // Sử dụng window.location để redirect ngay lập tức
-          window.location.href = "/login";
+          window.location.href = "/signin";
           return Promise.reject(
             new ApiException("Phiên đăng nhập đã hết hạn", 401)
           );

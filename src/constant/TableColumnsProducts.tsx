@@ -1,6 +1,5 @@
 import { EllipsisOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
-import { Tag } from "antd";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import { DataType } from "~/type";
 
@@ -17,47 +16,45 @@ export const getColumnsProducts = ({
 }: ColumnParams): TableColumnsType<DataType> => {
   return [
     {
-      title: "Customer Name",
-      dataIndex: "customerName",
-      key: "customerName",
+      title: "Product Name",
+      dataIndex: "name",
+      key: "name",
       filters: [
-        { text: "Nguyễn Văn A", value: "Nguyễn Văn A" },
-        { text: "Trần Thị B", value: "Trần Thị B" },
+        { text: "Bánh dừa nướng Bến Tre", value: "Bánh dừa nướng Bến Tre" },
+        { text: "Test tên sản phẩm", value: "Test tên sản phẩm" },
       ],
-      filteredValue: filteredInfo.customerName || null,
-      onFilter: (value, record) =>
-        record.customerName.includes(value as string),
-      sorter: (a, b) => a.customerName.length - b.customerName.length,
-      sortOrder:
-        sortedInfo.columnKey === "customerName" ? sortedInfo.order : null,
+      filteredValue: filteredInfo.name || null,
+      onFilter: (value, record) => record.name.includes(value as string),
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortOrder: sortedInfo.columnKey === "name" ? sortedInfo.order : null,
       ellipsis: true,
     },
     {
-      title: "Product Name",
-      dataIndex: "productName",
-      key: "productName",
+      title: "Description",
+      dataIndex: "metaDescription",
+      key: "metaDescription",
     },
-    {
-      title: "Created Date",
-      dataIndex: "createdDate",
-      key: "createdDate",
-      render: (value: Date) => new Date(value).toLocaleDateString(),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <Tag color={status.color} style={{ color: status.textColor }}>
-          {status.name}
-        </Tag>
-      ),
-    },
-    {
-      title: "Price Range",
-      dataIndex: "priceRange",
-      key: "priceRange",
-    },
+    // {
+    //   title: "Created Date",
+    //   dataIndex: "createdDate",
+    //   key: "createdDate",
+    //   render: (value: Date) => new Date(value).toLocaleDateString(),
+    // },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   render: (status) => (
+    //     <Tag color={status.color} style={{ color: status.textColor }}>
+    //       {status.name}
+    //     </Tag>
+    //   ),
+    // },
+    // {
+    //   title: "Price Range",
+    //   dataIndex: "priceRange",
+    //   key: "priceRange",
+    // },
     {
       title: "Action",
       dataIndex: "",

@@ -6,7 +6,7 @@ import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
 import Button from "~/components/ui/button/Button";
 import { getColumnsProducts } from "~/constant/TableColumnsProducts";
-import { data } from "~/dummy";
+import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
 import { useModal } from "~/hooks/useModal";
 import { FilterIcon, PlusIcon } from "~/icons";
 import { DataType, OnChange, Sorts } from "~/type";
@@ -25,11 +25,17 @@ function ProductsManagement() {
     closeModal: closeModalCreate,
   } = useModal();
 
+  // #region  hook api
+  const { data: dataProducts, isLoading } = usePaginationProduct();
+  console.log("dataProducts", dataProducts, isLoading);
+  //#endregion
+  // #region Function
   const handleChange: OnChange = (pagination, filters, sorter) => {
     console.log("Various parameters", pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter as Sorts);
   };
+  // #endregion
 
   return (
     <>
@@ -112,7 +118,7 @@ function ProductsManagement() {
                 sortedInfo,
                 openModal,
               })}
-              dataSource={data}
+              dataSource={dataProducts?.content}
               onChange={handleChange}
             />
           </ComponentCard>

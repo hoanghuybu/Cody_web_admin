@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { Suspense, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -25,16 +26,14 @@ import Images from "./pages/UiElements/Images";
 import Videos from "./pages/UiElements/Videos";
 import UserProfiles from "./pages/UserProfiles";
 import UsersManagement from "./pages/UsersManagement";
-import { useAuthStore } from "./store/authStore";
 
 function AppRouter() {
-  const { userInfo } = useAuthStore();
+  const userInfo = Cookies.get("user");
   const navigate = useNavigate();
   useEffect(() => {
     try {
       if (!window.location.pathname.includes("signin")) {
         const check = !userInfo ? true : false;
-        console.log(!!check);
         if (check) {
           navigate("/signin");
         }

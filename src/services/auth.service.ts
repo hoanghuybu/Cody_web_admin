@@ -1,7 +1,6 @@
 import Cookies from "js-cookie";
 
 export class AuthService {
-
     isAuthenticated(): boolean {
         const accessToken = Cookies.get("accessToken");
         return !!accessToken;
