@@ -29,32 +29,22 @@ export const getColumnsProducts = ({
       sortOrder: sortedInfo.columnKey === "name" ? sortedInfo.order : null,
       ellipsis: true,
     },
+
+    {
+      title: "Price Range",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
+      title: "Stock Quantity",
+      dataIndex: "stockQuantity",
+      key: "stockQuantity",
+    },
     {
       title: "Description",
       dataIndex: "metaDescription",
       key: "metaDescription",
     },
-    // {
-    //   title: "Created Date",
-    //   dataIndex: "createdDate",
-    //   key: "createdDate",
-    //   render: (value: Date) => new Date(value).toLocaleDateString(),
-    // },
-    // {
-    //   title: "Status",
-    //   dataIndex: "status",
-    //   key: "status",
-    //   render: (status) => (
-    //     <Tag color={status.color} style={{ color: status.textColor }}>
-    //       {status.name}
-    //     </Tag>
-    //   ),
-    // },
-    // {
-    //   title: "Price Range",
-    //   dataIndex: "priceRange",
-    //   key: "priceRange",
-    // },
     {
       title: "Action",
       dataIndex: "",
