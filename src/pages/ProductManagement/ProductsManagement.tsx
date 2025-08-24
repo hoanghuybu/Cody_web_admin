@@ -19,6 +19,7 @@ function ProductsManagement() {
   >({});
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, openModal, closeModal } = useModal();
+  const [selectedData, setSelectedData] = useState(null);
   const {
     isOpen: isOpenCreate,
     openModal: openModalCreate,
@@ -117,6 +118,7 @@ function ProductsManagement() {
                 filteredInfo,
                 sortedInfo,
                 openModal,
+                handleSelectedData: setSelectedData,
               })}
               dataSource={dataProducts?.content}
               onChange={handleChange}
@@ -125,6 +127,7 @@ function ProductsManagement() {
         </div>
       </div>
       <OrderDetailModal
+        initData={selectedData}
         onClose={closeModal}
         isOpen={isOpenDetail}
         title="any"

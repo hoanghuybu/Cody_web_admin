@@ -5,6 +5,7 @@ export const endpoints = {
 
     /**region Product */
     pagination: "/api/product/search",
-    product_create: "/api/product/search"
+    product_create: "/api/product/create",
+    product_update: (id: string) => `/api/product/update/${id}`
     /**endregion */
 }
