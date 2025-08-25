@@ -7,10 +7,16 @@ export type GetSingle<T> = T extends (infer U)[] ? U : never;
 export type Sorts = GetSingle<Parameters<OnChange>[2]>;
 
 export interface DataType {
+    key?: string,
+    productName?: string,
+    createdDate?: Date,
+    status?: any,
+    priceRange?: any,
     id: string;
     name: string;
     slug: string;
     metaDescription: Date;
+    customerName?: string;
     categories: {
         id: string,
         name: string,
