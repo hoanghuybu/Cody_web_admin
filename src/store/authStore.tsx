@@ -75,7 +75,7 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (e) {
       console.log(e);
-      Cookies.remove("accessToken");
+      // Cookies.remove("accessToken");
     }
   }, []);
 
