@@ -46,7 +46,6 @@ export class AxiosHttpClient {
       (error) => {
         if (error.response?.status === 401) {
           // Clear token và redirect về login
-          Cookies.remove("user");
           Cookies.remove("accessToken");
           Cookies.remove("refreshToken");
           // Sử dụng window.location để redirect ngay lập tức
