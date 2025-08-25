@@ -5,14 +5,14 @@ import { endpoints } from "~/services/endpoints";
 import { useAuthStore } from "~/store/authStore";
 
 export interface AuthResponse {
-    success: boolean
+    status: boolean
     message: string
     data: Data
 }
 
 export interface Data {
-    token: string
-    user: User
+    accessToken: string
+    refreshToken: string
 }
 export interface User {
     id: number
@@ -28,9 +28,8 @@ const useLogin = () => {
         },
         onSuccess: (res: AuthResponse) => {
             login({
-                user: res?.data?.user,
-                accessToken: res?.data?.token || "",
-                refreshToken: res?.data?.token || "",
+                accessToken: res?.data?.accessToken,
+                refreshToken: res?.data?.refreshToken || "",
             })
 
         }
