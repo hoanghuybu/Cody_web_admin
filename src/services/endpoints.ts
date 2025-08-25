@@ -1,7 +1,7 @@
 
 
 export const endpoints = {
-    login: "/api/auth/login".trim(),
+    login: "/auth/admin/login".trim(),
 
     /**region Product */
     pagination: "/api/product/search",

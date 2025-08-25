@@ -28,7 +28,7 @@ import UserProfiles from "./pages/UserProfiles";
 import UsersManagement from "./pages/UsersManagement";
 
 function AppRouter() {
-  const userInfo = Cookies.get("user");
+  const userInfo = Cookies.get("accessToken");
   const navigate = useNavigate();
   useEffect(() => {
     try {

@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import { useNavigate } from "react-router";
-import { UserSessionDto } from "~/dto/auth/login.dto";
 import { authService } from "~/services";
 
 interface AuthContextType {
@@ -29,21 +28,19 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const [isFirstLoading, setIsFirstLoading] = React.useState(false);
   const [logged, setLogged] = React.useState(false);
-  const [userInfo, setUserInfo] = useState<UserSessionDto>(undefined);
+  const [userInfo, setUserInfo] = useState(undefined);
 
   const login = useCallback(
     (account: { user: any; accessToken: string; refreshToken: string }) => {
-      setUserInfo(account.user);
-      Cookies.set("user", JSON.stringify(account.user), { expires: 7 });
+      setUserInfo(account.accessToken);
       Cookies.set("accessToken", account.accessToken, { expires: 7 });
-      // Cookies.set("refreshToken", account.refreshToken, { expires: 10000 });
+      Cookies.set("refreshToken", account.refreshToken, { expires: 10000 });
     },
     []
   );
 
   const logout = useCallback(() => {
     setUserInfo(null);
-    Cookies.remove("user");
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
     navigate("/signin");
@@ -54,8 +51,8 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       if (!window.location.pathname.includes("signin")) {
         const isAuthenticated = authService.isAuthenticated();
-        const userCookie = Cookies.get("user");
-        const parsed = JSON.parse(userCookie);
+        const accessTokenCookie = Cookies.get("accessToken");
+        const parsed = JSON.parse(accessTokenCookie);
         setUserInfo(parsed);
         const check = isAuthenticated ? true : false;
         if (check) {
@@ -70,15 +67,15 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    const userCookie = Cookies.get("user");
+    const accessTokenCookie = Cookies.get("accessToken");
     try {
-      if (userCookie) {
-        const parsed = JSON.parse(userCookie);
+      if (accessTokenCookie) {
+        const parsed = JSON.parse(accessTokenCookie);
         setUserInfo(parsed);
       }
     } catch (e) {
       console.log(e);
-      Cookies.remove("user");
+      Cookies.remove("accessToken");
     }
   }, []);
 
