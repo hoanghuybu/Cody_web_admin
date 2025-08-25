@@ -6,7 +6,7 @@ import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
 import Button from "~/components/ui/button/Button";
 import { getColumnsProducts } from "~/constant/TableColumnsProducts";
-import { data } from "~/dummy";
+import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
 import { useModal } from "~/hooks/useModal";
 import { FilterIcon, PlusIcon } from "~/icons";
 import { DataType, OnChange, Sorts } from "~/type";
@@ -19,17 +19,24 @@ function ProductsManagement() {
   >({});
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, openModal, closeModal } = useModal();
+  const [selectedData, setSelectedData] = useState(null);
   const {
     isOpen: isOpenCreate,
     openModal: openModalCreate,
     closeModal: closeModalCreate,
   } = useModal();
 
+  // #region  hook api
+  const { data: dataProducts, isLoading } = usePaginationProduct();
+  console.log("dataProducts", dataProducts, isLoading);
+  //#endregion
+  // #region Function
   const handleChange: OnChange = (pagination, filters, sorter) => {
     console.log("Various parameters", pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter as Sorts);
   };
+  // #endregion
 
   return (
     <>
@@ -111,14 +118,16 @@ function ProductsManagement() {
                 filteredInfo,
                 sortedInfo,
                 openModal,
+                handleSelectedData: setSelectedData,
               })}
-              dataSource={data}
+              dataSource={dataProducts?.content}
               onChange={handleChange}
             />
           </ComponentCard>
         </div>
       </div>
       <OrderDetailModal
+        initData={selectedData}
         onClose={closeModal}
         isOpen={isOpenDetail}
         title="any"

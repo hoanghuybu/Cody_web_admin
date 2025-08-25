@@ -1,6 +1,5 @@
 import { EllipsisOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
-import { Tag } from "antd";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import { DataType } from "~/type";
 
@@ -8,63 +7,57 @@ interface ColumnParams {
   filteredInfo: Record<string, FilterValue | null>;
   sortedInfo: SorterResult<DataType>;
   openModal: () => void;
+  handleSelectedData: (value: any) => void;
 }
 
 export const getColumnsProducts = ({
   filteredInfo,
   sortedInfo,
   openModal,
+  handleSelectedData,
 }: ColumnParams): TableColumnsType<DataType> => {
+  const handleOnClick = (value: any) => {
+    handleSelectedData(value);
+    openModal();
+  };
   return [
     {
-      title: "Customer Name",
-      dataIndex: "customerName",
-      key: "customerName",
+      title: "Product Name",
+      dataIndex: "name",
+      key: "name",
       filters: [
-        { text: "Nguyễn Văn A", value: "Nguyễn Văn A" },
-        { text: "Trần Thị B", value: "Trần Thị B" },
+        { text: "Bánh dừa nướng Bến Tre", value: "Bánh dừa nướng Bến Tre" },
+        { text: "Test tên sản phẩm", value: "Test tên sản phẩm" },
       ],
-      filteredValue: filteredInfo.customerName || null,
-      onFilter: (value, record) =>
-        record.customerName.includes(value as string),
-      sorter: (a, b) => a.customerName.length - b.customerName.length,
-      sortOrder:
-        sortedInfo.columnKey === "customerName" ? sortedInfo.order : null,
+      filteredValue: filteredInfo.name || null,
+      onFilter: (value, record) => record.name.includes(value as string),
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortOrder: sortedInfo.columnKey === "name" ? sortedInfo.order : null,
       ellipsis: true,
     },
-    {
-      title: "Product Name",
-      dataIndex: "productName",
-      key: "productName",
-    },
-    {
-      title: "Created Date",
-      dataIndex: "createdDate",
-      key: "createdDate",
-      render: (value: Date) => new Date(value).toLocaleDateString(),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <Tag color={status.color} style={{ color: status.textColor }}>
-          {status.name}
-        </Tag>
-      ),
-    },
+
     {
       title: "Price Range",
-      dataIndex: "priceRange",
-      key: "priceRange",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
+      title: "Stock Quantity",
+      dataIndex: "stockQuantity",
+      key: "stockQuantity",
+    },
+    {
+      title: "Description",
+      dataIndex: "metaDescription",
+      key: "metaDescription",
     },
     {
       title: "Action",
       dataIndex: "",
       key: "x",
-      render: () => (
+      render: (_: any, record: any) => (
         <button
-          onClick={openModal}
+          onClick={() => handleOnClick(record)}
           className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
         >
           <EllipsisOutlined />

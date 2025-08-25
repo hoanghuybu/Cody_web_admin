@@ -1,83 +1,100 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import Cookies from "js-cookie";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useNavigate } from "react-router";
+import { authService } from "~/services";
 
-const AuthStoreContext = React.createContext(null);
+interface AuthContextType {
+  userInfo: any;
+  login: (account: any) => void;
+  logout: () => void;
+}
+
+const AuthStoreContext = React.createContext<AuthContextType>({
+  userInfo: null,
+  login: () => {},
+  logout: () => {},
+});
 
 const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [authState, setAuthState] = React.useState({
-    isAuthenticated: false,
-    user: null,
-    token: null,
-  });
+
   const [isFirstLoading, setIsFirstLoading] = React.useState(false);
-  const [logged, setLogged] = React.useState(
-    authState.isAuthenticated ? true : false
+  const [logged, setLogged] = React.useState(false);
+  const [userInfo, setUserInfo] = useState(undefined);
+
+  const login = useCallback(
+    (account: { user: any; accessToken: string; refreshToken: string }) => {
+      setUserInfo(account.accessToken);
+      Cookies.set("accessToken", account.accessToken, { expires: 7 });
+      Cookies.set("refreshToken", account.refreshToken, { expires: 10000 });
+    },
+    []
   );
 
-  const login = useCallback(async (user: any, token: string) => {
-    setIsLoading(true);
-    // Simulate an API call to authenticate the user
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setAuthState({ isAuthenticated: true, user, token });
-    setIsLoading(false);
-  }, []);
-
   const logout = useCallback(() => {
-    setAuthState({ isAuthenticated: false, user: null, token: null });
+    setUserInfo(null);
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
     navigate("/signin");
   }, [navigate]);
 
   const authenticate = useCallback(async () => {
     setIsFirstLoading(true);
     try {
-      // const user = await authService.authenticate();
-      const check = authState.isAuthenticated ? true : false;
-      if (check) {
-        setLogged(true);
+      if (!window.location.pathname.includes("signin")) {
+        const isAuthenticated = authService.isAuthenticated();
+        const accessTokenCookie = Cookies.get("accessToken");
+        const parsed = JSON.parse(accessTokenCookie);
+        setUserInfo(parsed);
+        const check = isAuthenticated ? true : false;
+        if (check) {
+          setLogged(true);
+        }
       }
     } catch (error) {
       console.error("Authentication failed", error);
       setLogged(false);
     }
     setIsFirstLoading(false);
-  }, [authState.isAuthenticated]);
+  }, []);
 
-  //   useEffect(() => {
-  //     if (!logged) {
-  //       navigate("/signin");
-  //     }
-  //   }, [logged, navigate]);
+  useEffect(() => {
+    const accessTokenCookie = Cookies.get("accessToken");
+    try {
+      if (accessTokenCookie) {
+        const parsed = JSON.parse(accessTokenCookie);
+        setUserInfo(parsed);
+      }
+    } catch (e) {
+      console.log(e);
+      Cookies.remove("accessToken");
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   if (!userInfo) {
+  //     navigate("/signin");
+  //   }
+  // }, [userInfo, navigate]);
 
   const value = useMemo(
     () => ({
-      authState,
       isFirstLoading,
-      isLoading,
       logged,
+      userInfo,
       authenticate,
-      login: (user: any, token: string) => {
-        login(user, token);
-        navigate("/");
-      },
-      logout: () => {
-        logout();
-        navigate("/signin");
-      },
-    }),
-    [
-      authState,
       login,
       logout,
-      navigate,
-      isLoading,
-      isFirstLoading,
-      authenticate,
-      logged,
-    ]
+    }),
+    [login, logout, isFirstLoading, authenticate, logged, userInfo]
   );
 
   return (
