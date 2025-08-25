@@ -157,7 +157,11 @@ export const rootApiService = new ApiService({
     interceptors: {
         "Authorization": async () => {
             const token = authService.getAccessToken();
-            return `Bearer ${token}`;
+            let header = null
+            if (token) {
+                header = `Bearer ${token}`
+            }
+            return header;
         },
     },
 });
