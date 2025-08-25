@@ -13,6 +13,12 @@ export const data: DataType[] = [
       textColor: "#856404",
     },
     priceRange: "20.000.000 - 25.000.000",
+    id: "",
+    name: "",
+    slug: "",
+    metaDescription: undefined,
+    categories: [],
+    images: []
   },
   {
     key: "2",
@@ -26,6 +32,12 @@ export const data: DataType[] = [
       textColor: "#155724",
     },
     priceRange: "30.000.000 - 35.000.000",
+    id: "",
+    name: "",
+    slug: "",
+    metaDescription: undefined,
+    categories: [],
+    images: []
   },
   {
     key: "3",
@@ -39,6 +51,12 @@ export const data: DataType[] = [
       textColor: "#721C24",
     },
     priceRange: "25.000.000 - 28.000.000",
+    id: "",
+    name: "",
+    slug: "",
+    metaDescription: undefined,
+    categories: [],
+    images: []
   },
   {
     key: "4",
@@ -52,6 +70,12 @@ export const data: DataType[] = [
       textColor: "#004085",
     },
     priceRange: "28.000.000 - 32.000.000",
+    id: "",
+    name: "",
+    slug: "",
+    metaDescription: undefined,
+    categories: [],
+    images: []
   },
   {
     key: "5",
@@ -65,6 +89,12 @@ export const data: DataType[] = [
       textColor: "#856404",
     },
     priceRange: "20.000.000 - 25.000.000",
+    id: "",
+    name: "",
+    slug: "",
+    metaDescription: undefined,
+    categories: [],
+    images: []
   },
   {
     key: "6",
@@ -78,6 +108,12 @@ export const data: DataType[] = [
       textColor: "#155724",
     },
     priceRange: "30.000.000 - 35.000.000",
+    id: "",
+    name: "",
+    slug: "",
+    metaDescription: undefined,
+    categories: [],
+    images: []
   },
   {
     key: "7",
@@ -91,6 +127,12 @@ export const data: DataType[] = [
       textColor: "#721C24",
     },
     priceRange: "25.000.000 - 28.000.000",
+    id: "",
+    name: "",
+    slug: "",
+    metaDescription: undefined,
+    categories: [],
+    images: []
   },
   {
     key: "8",
@@ -104,6 +146,12 @@ export const data: DataType[] = [
       textColor: "#004085",
     },
     priceRange: "28.000.000 - 32.000.000",
+    id: "",
+    name: "",
+    slug: "",
+    metaDescription: undefined,
+    categories: [],
+    images: []
   },
 ];
 
