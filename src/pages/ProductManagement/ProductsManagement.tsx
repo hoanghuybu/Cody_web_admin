@@ -28,11 +28,9 @@ function ProductsManagement() {
 
   // #region  hook api
   const { data: dataProducts, isLoading } = usePaginationProduct();
-  console.log("dataProducts", dataProducts, isLoading);
   //#endregion
   // #region Function
   const handleChange: OnChange = (pagination, filters, sorter) => {
-    console.log("Various parameters", pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter as Sorts);
   };
@@ -120,7 +118,8 @@ function ProductsManagement() {
                 openModal,
                 handleSelectedData: setSelectedData,
               })}
-              dataSource={dataProducts?.content}
+              dataSource={dataProducts}
+              loading={isLoading}
               onChange={handleChange}
             />
           </ComponentCard>
