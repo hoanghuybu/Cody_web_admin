@@ -9,7 +9,7 @@ import {
   Select,
   message,
 } from "antd";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import FileInput from "~/components/form/input/FileInput";
 import Button from "~/components/ui/button/Button";
 import { usePaginationCategory } from "~/hooks/categories/usePaginationCategory";
@@ -21,10 +21,23 @@ interface ProductCreateModalProps {
   title: string;
   isOpen: boolean;
   onClose: () => void;
+  initialValue?: Partial<{
+    name: string;
+    description: string;
+    slug: string;
+    metaDescription: string;
+    price: number;
+    includedIds: string[];
+    originalPrice: number;
+    stockQuantity: number;
+    categoryIds: string[];
+    images: any[];
+    isHidden: boolean;
+  }>;
 }
 
 function OrderCreateModal(props: ProductCreateModalProps) {
-  const { isOpen, onClose } = props;
+  const { title = "Create Product", isOpen, onClose, initialValue } = props;
 
   const [form] = Form.useForm();
   const { closeModal } = useModal();
@@ -133,6 +146,12 @@ function OrderCreateModal(props: ProductCreateModalProps) {
     }
   };
 
+  useEffect(() => {
+    if (initialValue) {
+      form.setFieldsValue(initialValue);
+    }
+  }, [initialValue, form]);
+
   return (
     <Modal
       footer={null}
@@ -145,7 +164,7 @@ function OrderCreateModal(props: ProductCreateModalProps) {
       <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11 max-h-[800px]">
         <div className="px-2 pr-14">
           <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-            Create Product
+            {title}
           </h4>
           <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
             Update your details to keep your profile up-to-date.
@@ -156,7 +175,6 @@ function OrderCreateModal(props: ProductCreateModalProps) {
           form={form}
           layout="vertical"
           initialValues={{
-            // giữ default như input gốc
             name: null,
             description: null,
             slug: null,
@@ -168,6 +186,7 @@ function OrderCreateModal(props: ProductCreateModalProps) {
             categoryIds: null,
             images: null,
             isHidden: true,
+            ...initialValue,
           }}
           onFinish={onFinish}
         >
