@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { useLoadDetailProduct } from "~/hooks/products/useLoadDetailProduct";
 import { useUpdateProduct } from "~/hooks/products/useUpdateProduct";
-import { useModal } from "~/hooks/useModal";
 import OrderCreateModal from "./ProductCreateModal";
 
 interface ProductDetailDetailProps {
@@ -12,6 +12,7 @@ interface ProductDetailDetailProps {
 
 function ProductDetailModal(props: ProductDetailDetailProps) {
   const { initData, isOpen, onClose } = props;
+  const [shouldLoadDetail, setShouldLoadDetail] = useState(false);
   const [input, setInput] = useState({
     name: null,
     description: null,
@@ -21,41 +22,52 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
     originalPrice: null,
     stockQuantity: null,
     categoryIds: null,
+    includedIds: null,
     images: null,
   });
-  const { closeModal } = useModal();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { onUpdateProduct, isLoading, isError, isSuccess } = useUpdateProduct(
+  const { data, onUpdateProduct, isLoading, isError } = useUpdateProduct(
     initData?.id
   );
 
-  const handleSave = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: detailProduct, isLoading: isLoadingDetail } =
+    useLoadDetailProduct(shouldLoadDetail ? initData?.id : undefined);
+
+  const handleSave = (value: any) => {
     // Handle save logic here
-    onUpdateProduct(input);
-    if (isSuccess) {
-      closeModal();
-    }
+    onUpdateProduct(value);
+
+    // closeModal();
   };
 
   useEffect(() => {
-    if (initData) {
+    if (detailProduct) {
       setInput({
-        name: initData?.name,
-        description: initData?.metaDescription,
-        slug: initData?.slug,
-        metaDescription: initData?.metaDescription,
-        price: initData?.price,
-        originalPrice: initData?.price,
-        stockQuantity: initData?.stockQuantity,
-        categoryIds: initData?.categories,
-        images: initData?.images,
+        name: detailProduct?.name,
+        description: detailProduct?.metaDescription,
+        slug: detailProduct?.slug,
+        metaDescription: detailProduct?.metaDescription,
+        price: detailProduct?.price,
+        originalPrice: detailProduct?.price,
+        stockQuantity: detailProduct?.stockQuantity,
+        categoryIds: detailProduct?.categories?.map((c: any) => c?.id),
+        images: detailProduct?.images,
+        includedIds: detailProduct?.product?.map((c: any) => c?.id),
       });
     }
-  }, [initData]);
+  }, [detailProduct]);
 
-  console.log("initData", initData);
+  useEffect(() => {
+    if (isOpen && initData?.id) {
+      setShouldLoadDetail(true);
+    }
+  }, [isOpen, initData]);
+
   return (
     <OrderCreateModal
+      isEdit={true}
+      handleUpdate={handleSave}
       title="Update Product"
       initialValue={input}
       isOpen={isOpen}
