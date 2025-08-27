@@ -87,9 +87,8 @@ export class ToastService implements MessageInstance {
       if (errors) {
         this.error(errors);
       } else this.error(err.message || "Unknown");
-
     } catch (error) {
-      console.error(error)
+      console.error(error);
       this.error(JSON.stringify(err, null, 2));
     }
   }

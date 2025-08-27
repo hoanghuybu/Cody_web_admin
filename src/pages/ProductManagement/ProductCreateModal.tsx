@@ -15,12 +15,13 @@ import Button from "~/components/ui/button/Button";
 import { usePaginationCategory } from "~/hooks/categories/usePaginationCategory";
 import useCreateProduct from "~/hooks/products/useCreateProduct";
 import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
-import { useModal } from "~/hooks/useModal";
 
 interface ProductCreateModalProps {
   title: string;
   isOpen: boolean;
   onClose: () => void;
+  isEdit?: boolean;
+  handleUpdate?: (value: any) => void;
   initialValue?: Partial<{
     name: string;
     description: string;
@@ -37,10 +38,16 @@ interface ProductCreateModalProps {
 }
 
 function OrderCreateModal(props: ProductCreateModalProps) {
-  const { title = "Create Product", isOpen, onClose, initialValue } = props;
+  const {
+    title = "Create Product",
+    isOpen,
+    onClose,
+    initialValue,
+    isEdit,
+    handleUpdate,
+  } = props;
 
   const [form] = Form.useForm();
-  const { closeModal } = useModal();
 
   const { onCreateProduct, isLoading } = useCreateProduct();
   const { data: lstCategories, isLoading: isLoadingCategory } =
@@ -65,21 +72,6 @@ function OrderCreateModal(props: ProductCreateModalProps) {
       })),
     [dataProducts]
   );
-
-  // Validator unique slug dựa trên dataProducts
-  const validateUniqueSlug = async (_: any, value: string) => {
-    if (!value) return Promise.resolve();
-    const exists = (dataProducts || []).some(
-      (p: any) =>
-        String(p?.slug).trim().toLowerCase() === value.trim().toLowerCase()
-    );
-    if (exists) {
-      return Promise.reject(
-        new Error("Slug đã tồn tại. Vui lòng chọn slug khác.")
-      );
-    }
-    return Promise.resolve();
-  };
 
   // Nhận file từ FileInput và set vào Form (images: {file, preview}[])
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,14 +123,18 @@ function OrderCreateModal(props: ProductCreateModalProps) {
                 },
               ],
       };
-
-      const result = await onCreateProduct(body);
-      if (result?.status === 200) {
-        message.success("Tạo sản phẩm thành công");
-        closeModal();
+      if (isEdit) {
+        console.log("Edit");
+        handleUpdate(body);
       } else {
-        console.log("Create product failed", result);
-        message.error("Tạo sản phẩm thất bại");
+        const result = await onCreateProduct(body);
+        if (result?.status === 200) {
+          message.success("Tạo sản phẩm thành công");
+          onClose();
+        } else {
+          console.log("Create product failed", result);
+          message.error("Tạo sản phẩm thất bại");
+        }
       }
     } catch (error) {
       console.error("Error creating product:", error);
@@ -189,6 +185,7 @@ function OrderCreateModal(props: ProductCreateModalProps) {
             ...initialValue,
           }}
           onFinish={onFinish}
+          onFinishFailed={(err) => console.log("Form validation failed:", err)}
         >
           <div className="px-2 overflow-y-auto custom-scrollbar">
             <div className="grid grid-cols-1 gap-x-6 gap-y-5">
@@ -205,10 +202,7 @@ function OrderCreateModal(props: ProductCreateModalProps) {
               <Form.Item
                 label="Slug"
                 name="slug"
-                rules={[
-                  { required: true, message: "Vui lòng nhập slug" },
-                  { validator: validateUniqueSlug },
-                ]}
+                rules={[{ required: true, message: "Vui lòng nhập slug" }]}
                 validateTrigger={["onBlur", "onSubmit"]}
               >
                 <AntInput placeholder="vd: keo-dua-ben-tre" />
@@ -435,7 +429,7 @@ function OrderCreateModal(props: ProductCreateModalProps) {
               size="sm"
               variant="outline"
               type="button"
-              onClick={closeModal}
+              onClick={onClose}
               disabled={isLoading}
             >
               {isLoading ? <LoadingOutlined /> : "Close"}
