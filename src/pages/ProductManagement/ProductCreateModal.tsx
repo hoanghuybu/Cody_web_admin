@@ -19,6 +19,7 @@ import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
 interface ProductCreateModalProps {
   title: string;
   isOpen: boolean;
+  isLoadingUpdate?: boolean;
   onClose: () => void;
   isEdit?: boolean;
   handleUpdate?: (value: any) => void;
@@ -40,6 +41,7 @@ interface ProductCreateModalProps {
 function OrderCreateModal(props: ProductCreateModalProps) {
   const {
     title = "Create Product",
+    isLoadingUpdate,
     isOpen,
     onClose,
     initialValue,
@@ -91,7 +93,6 @@ function OrderCreateModal(props: ProductCreateModalProps) {
 
   // Submit form
   const onFinish = async (values: any) => {
-    // Đảm bảo shape GIỐNG HỆT "input" của bạn:
     const payload = {
       name: values?.name ?? null,
       description: values?.description ?? null,
@@ -104,8 +105,8 @@ function OrderCreateModal(props: ProductCreateModalProps) {
       stockQuantity:
         values?.stockQuantity != null ? Number(values?.stockQuantity) : null,
       categoryIds: values?.categoryIds ?? null,
-      images: values?.images ?? null, // vẫn là mảng {file, preview} từ FileInput (không bắt buộc)
-      isHidden: values?.isHidden ?? true,
+      images: values?.images ?? null,
+      isHidden: values?.isHidden ?? false,
     };
 
     try {
@@ -124,8 +125,7 @@ function OrderCreateModal(props: ProductCreateModalProps) {
               ],
       };
       if (isEdit) {
-        console.log("Edit");
-        handleUpdate(body);
+        handleUpdate({ body });
       } else {
         const result = await onCreateProduct(body);
         if (result?.status === 200) {
@@ -430,17 +430,21 @@ function OrderCreateModal(props: ProductCreateModalProps) {
               variant="outline"
               type="button"
               onClick={onClose}
-              disabled={isLoading}
+              disabled={isLoading || isLoadingUpdate}
             >
-              {isLoading ? <LoadingOutlined /> : "Close"}
+              {isLoading || isLoadingUpdate ? <LoadingOutlined /> : "Close"}
             </Button>
             <Button
               type="button"
               size="sm"
               onClick={() => form.submit()}
-              disabled={isLoading}
+              disabled={isLoading || isLoadingUpdate}
             >
-              {isLoading ? <LoadingOutlined /> : "Save Changes"}
+              {isLoading || isLoadingUpdate ? (
+                <LoadingOutlined />
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </div>
         </Form>

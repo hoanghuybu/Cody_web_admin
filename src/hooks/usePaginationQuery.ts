@@ -18,9 +18,9 @@ export const usePaginationQuery = <T>(
           Object.entries(rest).map(([k, v]) => [k, String(v)])
         ),
       });
-
+      console.log("url", `${endpoint}?${query.toString()}`);
       const res = await rootApiService.get(`${endpoint}?${query.toString()}`);
-      return res.data.data as PaginationResponse<T>;
+      return res.data as PaginationResponse<T>;
     },
     placeholderData: keepPreviousData,
   });
