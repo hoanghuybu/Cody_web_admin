@@ -6,9 +6,10 @@ import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
 import Button from "~/components/ui/button/Button";
 import { getColumnsProducts } from "~/constant/TableColumnsProducts";
-import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
 import { useModal } from "~/hooks/useModal";
+import { usePaginationQuery } from "~/hooks/usePaginationQuery";
 import { FilterIcon, PlusIcon } from "~/icons";
+import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
 import OrderCreateModal from "./ProductCreateModal";
 import OrderDetailModal from "./ProductDetail";
@@ -17,6 +18,12 @@ function ProductsManagement() {
   const [filteredInfo, setFilteredInfo] = useState<
     Record<string, FilterValue | null>
   >({});
+  const [pagination, setPagination] = useState({
+    current: 1, // AntD dùng 1-based
+    pageSize: 10,
+    sortBy: "createdAt",
+    sortDirection: "DESC",
+  });
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, openModal, closeModal } = useModal();
   const [selectedData, setSelectedData] = useState(null);
@@ -27,12 +34,33 @@ function ProductsManagement() {
   } = useModal();
 
   // #region  hook api
-  const { data: dataProducts, isLoading } = usePaginationProduct();
+  // const { data: dataProductsOld } = usePaginationProduct();
+  const {
+    data: dataProducts,
+    total,
+    isLoading,
+  } = usePaginationQuery<any>(
+    endpoints.pagination, // endpoint
+    {
+      page: pagination.current - 1, // backend 0-based
+      size: pagination.pageSize,
+      sortBy: pagination.sortBy,
+      sortDirection: pagination.sortDirection,
+    }
+  );
   //#endregion
   // #region Function
-  const handleChange: OnChange = (pagination, filters, sorter) => {
+  const handleChange: OnChange = (paginationConfig, filters, sorter) => {
     setFilteredInfo(filters);
     setSortedInfo(sorter as Sorts);
+    const sortObj = Array.isArray(sorter) ? sorter[0] : sorter;
+    setPagination({
+      ...pagination,
+      current: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
+      sortBy: sortObj?.field?.toString() || "createdAt",
+      sortDirection: sortObj?.order === "ascend" ? "ASC" : "DESC",
+    });
   };
   // #endregion
 
@@ -118,6 +146,12 @@ function ProductsManagement() {
                 openModal,
                 handleSelectedData: setSelectedData,
               })}
+              pagination={{
+                current: pagination.current,
+                pageSize: pagination.pageSize,
+                total: total,
+                showSizeChanger: true,
+              }}
               dataSource={dataProducts}
               loading={isLoading}
               onChange={handleChange}

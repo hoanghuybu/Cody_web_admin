@@ -6,9 +6,10 @@ import PageBreadcrumb from "~/components/common/PageBreadCrumb";
 import Button from "~/components/ui/button/Button";
 import ButtonGroupTabs from "~/components/ui/button/ButtonGroupTabs";
 import { getColumnsOrders } from "~/constant/TableColumnsOrders";
-import { data } from "~/dummy";
 import { useModal } from "~/hooks/useModal";
+import { usePaginationQuery } from "~/hooks/usePaginationQuery";
 import { FilterIcon, PlusIcon } from "~/icons";
+import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
 import OrderCreateModal from "./OrderCreateModal";
 import OrderDetailModal from "./OrderDetail";
@@ -42,6 +43,12 @@ function OrdersManagement() {
   const [filteredInfo, setFilteredInfo] = useState<
     Record<string, FilterValue | null>
   >({});
+  const [pagination, setPagination] = useState({
+    current: 1, // AntD dùng 1-based
+    pageSize: 10,
+    sortBy: "createdAt",
+    sortDirection: "DESC",
+  });
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, openModal, closeModal } = useModal();
   const {
@@ -50,10 +57,29 @@ function OrdersManagement() {
     closeModal: closeModalCreate,
   } = useModal();
 
-  const handleChange: OnChange = (pagination, filters, sorter) => {
+  const {
+    data: dataOrders,
+    total,
+    isLoading,
+  } = usePaginationQuery<any>(endpoints.orders_pagination, {
+    page: pagination.current - 1,
+    size: pagination.pageSize,
+    sortBy: pagination.sortBy,
+    sortDirection: pagination.sortDirection,
+  });
+
+  const handleChange: OnChange = (paginationConfig, filters, sorter) => {
     console.log("Various parameters", pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter as Sorts);
+    const sortObj = Array.isArray(sorter) ? sorter[0] : sorter;
+    setPagination({
+      ...pagination,
+      current: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
+      sortBy: sortObj?.field?.toString() || "createdAt",
+      sortDirection: sortObj?.order === "ascend" ? "ASC" : "DESC",
+    });
   };
 
   const [activeTab, setActiveTab] = useState("all");
@@ -163,7 +189,14 @@ function OrdersManagement() {
                 sortedInfo,
                 openModal,
               })}
-              dataSource={data}
+              pagination={{
+                current: pagination.current,
+                pageSize: pagination.pageSize,
+                total: total,
+                showSizeChanger: true,
+              }}
+              loading={isLoading}
+              dataSource={dataOrders}
               onChange={handleChange}
             />
           </ComponentCard>

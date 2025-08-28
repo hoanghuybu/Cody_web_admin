@@ -1,21 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { rootApiService, toastService } from "~/services/@common";
+import { rootApiService, toastService } from "~/services";
 import { endpoints } from "~/services/endpoints";
-import { CreateProductBody } from "./useCreateProduct";
 
-export const useUpdateProduct = (id: string) => {
+export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
-  const url = endpoints.product_update(id);
 
   const {
     data,
-    mutate: onUpdateProduct,
+    mutate: onDeleteProduct,
     isPending,
     isError,
     isSuccess,
   } = useMutation({
-    mutationFn: (data: CreateProductBody) => {
-      return rootApiService.put(url, data);
+    mutationFn: (id: string) => {
+      return rootApiService.delete(endpoints.product_delete(id));
     },
     onSuccess: (res: any) => {
       queryClient.invalidateQueries({
@@ -28,5 +26,5 @@ export const useUpdateProduct = (id: string) => {
     },
   });
 
-  return { data, onUpdateProduct, isLoading: isPending, isError, isSuccess };
+  return { data, onDeleteProduct, isLoading: isPending, isError, isSuccess };
 };
