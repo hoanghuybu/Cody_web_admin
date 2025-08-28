@@ -10,4 +10,7 @@ export const endpoints = {
   // #region Categories
   categories_pagination: "/categories/get-all",
   // #endregion
+  // #region Orders
+  orders_pagination: "/admin/orders/get-all",
+  // #endregion
 };
