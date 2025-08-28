@@ -1,3 +1,4 @@
+import { message } from "antd";
 import { useEffect, useState } from "react";
 import { useLoadDetailProduct } from "~/hooks/products/useLoadDetailProduct";
 import { useUpdateProduct } from "~/hooks/products/useUpdateProduct";
@@ -30,15 +31,16 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
     initData?.id
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: detailProduct, isLoading: isLoadingDetail } =
     useLoadDetailProduct(shouldLoadDetail ? initData?.id : undefined);
 
   const handleSave = (value: any) => {
-    // Handle save logic here
-    onUpdateProduct(value);
-
-    // closeModal();
+    onUpdateProduct(value, {
+      onSuccess: () => {
+        message.success("Cập nhật sản phẩm thành công");
+        onClose();
+      },
+    });
   };
 
   useEffect(() => {
@@ -67,6 +69,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
   return (
     <OrderCreateModal
       isEdit={true}
+      isLoadingUpdate={isLoadingDetail}
       handleUpdate={handleSave}
       title="Update Product"
       initialValue={input}

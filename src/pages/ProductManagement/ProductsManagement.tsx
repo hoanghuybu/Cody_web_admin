@@ -34,7 +34,7 @@ function ProductsManagement() {
   } = useModal();
 
   // #region  hook api
-  // const { data: dataProducts, isLoading } = usePaginationProduct();
+  // const { data: dataProductsOld } = usePaginationProduct();
   const {
     data: dataProducts,
     total,
