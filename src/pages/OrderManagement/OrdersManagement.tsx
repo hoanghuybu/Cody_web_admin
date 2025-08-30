@@ -3,15 +3,13 @@ import { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useState } from "react";
 import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
-import Button from "~/components/ui/button/Button";
 import ButtonGroupTabs from "~/components/ui/button/ButtonGroupTabs";
 import { getColumnsOrders } from "~/constant/TableColumnsOrders";
 import { useModal } from "~/hooks/useModal";
 import { usePaginationQuery } from "~/hooks/usePaginationQuery";
-import { FilterIcon, PlusIcon } from "~/icons";
+import { FilterIcon } from "~/icons";
 import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
-import OrderCreateModal from "./OrderCreateModal";
 import OrderDetailModal from "./OrderDetail";
 
 function OrdersManagement() {
@@ -51,11 +49,11 @@ function OrdersManagement() {
   });
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, openModal, closeModal } = useModal();
-  const {
-    isOpen: isOpenCreate,
-    openModal: openModalCreate,
-    closeModal: closeModalCreate,
-  } = useModal();
+  // const {
+  //   isOpen: isOpenCreate,
+  //   openModal: openModalCreate,
+  //   closeModal: closeModalCreate,
+  // } = useModal();
 
   const {
     data: dataOrders,
@@ -68,8 +66,25 @@ function OrdersManagement() {
     sortDirection: pagination.sortDirection,
   });
 
+  const formatDataOrders = dataOrders?.map((item) => {
+    const prices = item.items?.map((prod: any) => prod.price) || [];
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+
+    const formatPrice = (value: number) => value.toLocaleString("en-US");
+    return {
+      ...item,
+      productName:
+        item.items
+          ?.map((prod: any) => prod.product?.name)
+          .filter(Boolean)
+          .join(", ") || "",
+      customerName: item?.buyer?.name || "",
+      priceRange: `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`,
+    };
+  });
+
   const handleChange: OnChange = (paginationConfig, filters, sorter) => {
-    console.log("Various parameters", pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter as Sorts);
     const sortObj = Array.isArray(sorter) ? sorter[0] : sorter;
@@ -93,14 +108,14 @@ function OrdersManagement() {
               <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
                 Overview
               </h3>
-              <Button
+              {/* <Button
                 onClick={openModalCreate}
                 size="sm"
                 variant="primary"
                 startIcon={<PlusIcon />}
               >
                 Create an Order
-              </Button>
+              </Button> */}
             </div>
           }
         >
@@ -196,7 +211,7 @@ function OrdersManagement() {
                 showSizeChanger: true,
               }}
               loading={isLoading}
-              dataSource={dataOrders}
+              dataSource={formatDataOrders}
               onChange={handleChange}
             />
           </ComponentCard>
@@ -207,11 +222,11 @@ function OrdersManagement() {
         isOpen={isOpenDetail}
         title="any"
       />
-      <OrderCreateModal
+      {/* <OrderCreateModal
         onClose={closeModalCreate}
         isOpen={isOpenCreate}
         title="any"
-      />
+      /> */}
     </>
   );
 }
