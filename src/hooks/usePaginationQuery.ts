@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { PaginationParams, PaginationResponse } from "~/dto/pagination.dto";
 import { rootApiService } from "~/services";
 
@@ -9,7 +9,7 @@ export const usePaginationQuery = <T>(
   const { page, size, ...rest } = params;
 
   const { data, isLoading, refetch, error } = useQuery({
-    queryKey: [endpoint, params], // tự động refetch khi params đổi
+    queryKey: [endpoint, params],
     queryFn: async () => {
       const query = new URLSearchParams({
         page: String(page),
@@ -18,11 +18,10 @@ export const usePaginationQuery = <T>(
           Object.entries(rest).map(([k, v]) => [k, String(v)])
         ),
       });
-      console.log("url", `${endpoint}?${query.toString()}`);
+
       const res = await rootApiService.get(`${endpoint}?${query.toString()}`);
       return res.data as PaginationResponse<T>;
     },
-    placeholderData: keepPreviousData,
   });
 
   return {

@@ -125,7 +125,7 @@ function OrderCreateModal(props: ProductCreateModalProps) {
               ],
       };
       if (isEdit) {
-        handleUpdate({ body });
+        handleUpdate(body);
       } else {
         const result = await onCreateProduct(body);
         if (result?.status === 200) {
@@ -147,6 +147,12 @@ function OrderCreateModal(props: ProductCreateModalProps) {
       form.setFieldsValue(initialValue);
     }
   }, [initialValue, form]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      form.resetFields();
+    }
+  }, [isOpen, form]);
 
   return (
     <Modal

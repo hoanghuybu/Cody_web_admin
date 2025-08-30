@@ -31,6 +31,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
     initData?.id
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: detailProduct, isLoading: isLoadingDetail } =
     useLoadDetailProduct(shouldLoadDetail ? initData?.id : undefined);
 
@@ -69,7 +70,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
   return (
     <OrderCreateModal
       isEdit={true}
-      isLoadingUpdate={isLoadingDetail}
+      isLoadingUpdate={isLoading}
       handleUpdate={handleSave}
       title="Update Product"
       initialValue={input}
