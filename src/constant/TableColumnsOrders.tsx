@@ -38,9 +38,9 @@ export const getColumnsOrders = ({
     },
     {
       title: "Created Date",
-      dataIndex: "createdDate",
-      key: "createdDate",
-      render: (value: Date) => new Date(value).toLocaleDateString(),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (value: Date) => new Date(value)?.toLocaleDateString(),
     },
     {
       title: "Status",
