@@ -48,7 +48,7 @@ function OrdersManagement() {
     sortDirection: "DESC",
   });
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
-  const { isOpen: isOpenDetail, openModal, closeModal } = useModal();
+  const { isOpen: isOpenDetail, closeModal, openModal } = useModal();
   // const {
   //   isOpen: isOpenCreate,
   //   openModal: openModalCreate,
@@ -95,6 +95,29 @@ function OrdersManagement() {
       sortBy: sortObj?.field?.toString() || "createdAt",
       sortDirection: sortObj?.order === "ascend" ? "ASC" : "DESC",
     });
+  };
+
+  const handleOnclick = (status: string): void => {
+    console.log("HEHE:", status);
+    switch (status) {
+      case "PENDING":
+        console.log("PENDING");
+        break;
+      case "CONFIRMED":
+        console.log("CONFIRMED");
+        break;
+      case "SHIPPED":
+        console.log("SHIPPED");
+        break;
+      case "DELIVERED":
+        console.log("DELIVERED");
+        break;
+      case "CANCELLED":
+        console.log("CANCELLED");
+        break;
+      default:
+        return;
+    }
   };
 
   const [activeTab, setActiveTab] = useState("all");
@@ -202,6 +225,7 @@ function OrdersManagement() {
               columns={getColumnsOrders({
                 filteredInfo,
                 sortedInfo,
+                handleOnclick,
                 openModal,
               })}
               pagination={{

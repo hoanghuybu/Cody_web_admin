@@ -23,22 +23,24 @@ interface ProductCreateModalProps {
   onClose: () => void;
   isEdit?: boolean;
   handleUpdate?: (value: any) => void;
-  initialValue?: Partial<{
-    name: string;
-    description: string;
-    slug: string;
-    metaDescription: string;
-    price: number;
-    includedIds: string[];
-    originalPrice: number;
-    stockQuantity: number;
-    categoryIds: string[];
-    images: any[];
-    isHidden: boolean;
-  }>;
+  initialValue?:
+    | Partial<{
+        name: string;
+        description: string;
+        slug: string;
+        metaDescription: string;
+        price: number;
+        includedIds: string[];
+        originalPrice: number;
+        stockQuantity: number;
+        categoryIds: string[];
+        images: any[];
+        isHidden: boolean;
+      }>
+    | any;
 }
 
-function OrderCreateModal(props: ProductCreateModalProps) {
+function ProductCreateModal(props: ProductCreateModalProps) {
   const {
     title = "Create Product",
     isLoadingUpdate,
@@ -459,4 +461,4 @@ function OrderCreateModal(props: ProductCreateModalProps) {
   );
 }
 
-export default OrderCreateModal;
+export default ProductCreateModal;

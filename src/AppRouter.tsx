@@ -7,6 +7,7 @@ import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import Blank from "./pages/Blank";
 import Calendar from "./pages/Calendar";
+import CategoriesManagement from "./pages/CategoriesManagement/CategoriesManagement";
 import BarChart from "./pages/Charts/BarChart";
 import LineChart from "./pages/Charts/LineChart";
 import Home from "./pages/Dashboard/Home";
@@ -71,6 +72,11 @@ function AppRouter() {
             index
             path="/account-management"
             element={<AccountManagement />}
+          />
+          <Route
+            index
+            path="/categories-management"
+            element={<CategoriesManagement />}
           />
 
           <Route index path="/staffs/:id" element={<StaffProfile />} />

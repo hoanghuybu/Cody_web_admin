@@ -23,7 +23,7 @@ const ActionPopover = ({ record, handleSelectedData, openModal }: any) => {
   const handleViewDetail = () => {
     handleSelectedData(record);
     openModal();
-    setPopoverVisible(false); // Đóng Popover sau khi bấm View Detail
+    setPopoverVisible(false);
   };
 
   const popoverContent = (
@@ -31,8 +31,8 @@ const ActionPopover = ({ record, handleSelectedData, openModal }: any) => {
       <Button type="link" onClick={handleViewDetail}>
         View Detail
       </Button>
-      <Button type="link" danger onClick={handleDelete}>
-        Delete
+      <Button type="link" style={{ color: "black" }} onClick={handleDelete}>
+        Change status
       </Button>
     </div>
   );
