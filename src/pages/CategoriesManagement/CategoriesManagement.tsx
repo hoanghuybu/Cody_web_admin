@@ -1,20 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { DownloadOutlined } from "@ant-design/icons";
 import { Table as ATable } from "antd";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
-import { Fragment, useState } from "react";
+import { useState } from "react";
+import { Fragment } from "react/jsx-runtime";
 import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
 import Button from "~/components/ui/button/Button";
-import { getColumnsProducts } from "~/constant/TableColumnsProducts";
+import { getColumnsCategories } from "~/constant/TableColumnsCategories";
 import { useModal } from "~/hooks/useModal";
 import { usePaginationQuery } from "~/hooks/usePaginationQuery";
 import { FilterIcon, PlusIcon } from "~/icons";
 import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
-import ProductCreateModal from "./ProductCreateModal";
-import ProductDetailModal from "./ProductDetail";
 
-function ProductsManagement() {
+function CategoriesManagement() {
   const [filteredInfo, setFilteredInfo] = useState<
     Record<string, FilterValue | null>
   >({});
@@ -40,7 +40,7 @@ function ProductsManagement() {
     total,
     isLoading,
   } = usePaginationQuery<any>(
-    endpoints.pagination, // endpoint
+    endpoints.categories_pagination, // endpoint
     {
       page: pagination.current - 1, // backend 0-based
       size: pagination.pageSize,
@@ -63,11 +63,10 @@ function ProductsManagement() {
     });
   };
   // #endregion
-
   return (
     <Fragment>
       <div>
-        <PageBreadcrumb pageTitle="Products" />
+        <PageBreadcrumb pageTitle="Category" />
         <div className="my-2">
           <ComponentCard
             title={
@@ -75,7 +74,7 @@ function ProductsManagement() {
                 <div className="w-full justify-between flex mb-2">
                   <div>
                     <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
-                      Products List
+                      Categories List
                     </h3>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                       Track your store's progress to boost your sales.
@@ -139,7 +138,7 @@ function ProductsManagement() {
             }
           >
             <ATable<DataType>
-              columns={getColumnsProducts({
+              columns={getColumnsCategories({
                 filteredInfo,
                 sortedInfo,
                 openModal,
@@ -158,19 +157,19 @@ function ProductsManagement() {
           </ComponentCard>
         </div>
       </div>
-      <ProductDetailModal
+      {/* <OrderDetailModal
         initData={selectedData}
         onClose={closeModal}
         isOpen={isOpenDetail}
         title="any"
       />
-      <ProductCreateModal
+      <OrderCreateModal
         onClose={closeModalCreate}
         isOpen={isOpenCreate}
-        title="Create Product"
-      />
+        title="any"
+      /> */}
     </Fragment>
   );
 }
 
-export default ProductsManagement;
+export default CategoriesManagement;
