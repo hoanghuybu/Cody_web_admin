@@ -10,6 +10,7 @@ interface ColumnParams {
   sortedInfo: SorterResult<DataType>;
   handleOnclick?: (status: string) => void;
   openModal?: () => void;
+  handleSelectedData: (value: any) => void;
 }
 
 export const getColumnsOrders = ({
@@ -17,6 +18,7 @@ export const getColumnsOrders = ({
   // sortedInfo,
   // handleOnclick,
   openModal,
+  handleSelectedData,
 }: ColumnParams): TableColumnsType<DataType> => {
   return [
     {
@@ -74,7 +76,7 @@ export const getColumnsOrders = ({
       render: (record) => (
         <ActionPopover
           record={record}
-          handleSelectedData={() => {}}
+          handleSelectedData={handleSelectedData}
           openModal={openModal}
         />
         // <Popover
