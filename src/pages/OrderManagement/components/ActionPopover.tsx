@@ -1,22 +1,73 @@
 import { MoreOutlined } from "@ant-design/icons";
 import { Button, Modal, Popover } from "antd";
-import { useState } from "react";
-import { useDeleteProduct } from "~/hooks/products/useDeleteProduct";
+import { Fragment, useRef, useState } from "react";
+import { CategoriesStatusKey, ECategoriesStatus } from "~/constant/ECategories";
+import useChangeStatusOrder from "~/hooks/orders/useChangeStatusOrder";
 
 const ActionPopover = ({ record, handleSelectedData, openModal }: any) => {
-  const { onDeleteProduct, isLoading } = useDeleteProduct();
+  const bodyRef = useRef(null);
+  const { onChangeOrderStatus, isLoading } = useChangeStatusOrder(
+    record?.orderId ?? null
+  );
+
+  const statusName =
+    ECategoriesStatus[record?.status?.name as CategoriesStatusKey];
   const [popoverVisible, setPopoverVisible] = useState(false);
 
-  const handleDelete = () => {
+  const handleOnclick = (status: string): void => {
+    switch (status) {
+      case ECategoriesStatus.PENDING.code:
+        handleChangeStatus(status);
+        break;
+      case ECategoriesStatus.CONFIRMED.code:
+        bodyRef.current = {
+          deliveryStatus: "CF",
+          paymentStatus: null,
+        };
+        handleChangeStatus(status);
+        break;
+      case ECategoriesStatus.DELIVERING.code:
+        bodyRef.current = {
+          deliveryStatus: "DLN",
+          paymentStatus: null,
+        };
+        handleChangeStatus(status);
+        break;
+      case ECategoriesStatus.DELIVERED.code:
+        bodyRef.current = {
+          deliveryStatus: "DLD",
+          paymentStatus: "PD",
+        };
+        handleChangeStatus(status);
+        break;
+      case ECategoriesStatus.DECLINED.code:
+        bodyRef.current = {
+          deliveryStatus: "DC",
+          paymentStatus: null,
+        };
+        handleChangeStatus(status);
+        break;
+      case "CANCELLED":
+        handleChangeStatus(status);
+        break;
+      default:
+        return;
+    }
+  };
+
+  const handleChangeStatus = (status: string) => {
+    const changedStatus = ECategoriesStatus[status as CategoriesStatusKey];
     Modal.confirm({
-      title: "Xác nhận xóa?",
-      content: `Bạn có chắc chắn muốn xóa sản phẩm "${record.name}" không?`,
-      okText: "Xóa",
+      title: "Xác nhận thay đổi trạng thái?",
+      content: `Bạn có chắc chắn muốn thay đổi sản phẩm từ "${statusName?.name}" thành "${changedStatus?.name}" không?`,
+      okText: "Xác nhận",
       cancelText: "Hủy",
       okButtonProps: {
         loading: isLoading,
       },
-      onOk: () => onDeleteProduct(record.id),
+      onOk: () => {
+        onChangeOrderStatus(bodyRef.current);
+      },
     });
   };
 
@@ -28,12 +79,11 @@ const ActionPopover = ({ record, handleSelectedData, openModal }: any) => {
 
   const popoverContent = (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      <Button type="link" onClick={handleViewDetail}>
+      <Button style={{ color: "black" }} type="link" onClick={handleViewDetail}>
         View Detail
       </Button>
-      <Button type="link" style={{ color: "black" }} onClick={handleDelete}>
-        Change status
-      </Button>
+
+      {_renderButtonChangeStatus(statusName.code, handleOnclick)}
     </div>
   );
 
@@ -53,3 +103,61 @@ const ActionPopover = ({ record, handleSelectedData, openModal }: any) => {
 };
 
 export default ActionPopover;
+
+const _renderButtonChangeStatus = (
+  status: string,
+  handleOnclick: (status: string) => void
+) => {
+  switch (status) {
+    case ECategoriesStatus.PENDING.code:
+      return (
+        <Fragment>
+          <Button
+            type="link"
+            style={{ color: "cyan" }}
+            onClick={() => handleOnclick("CONFIRMED")}
+          >
+            Confirmed
+          </Button>
+          <Button
+            type="link"
+            style={{ color: "red" }}
+            onClick={() => handleOnclick("DECLINED")}
+          >
+            Declined
+          </Button>
+        </Fragment>
+      );
+    case ECategoriesStatus.CONFIRMED.code:
+      return (
+        <Fragment>
+          <Button
+            type="link"
+            style={{ color: "blue" }}
+            onClick={() => handleOnclick("DELIVERING")}
+          >
+            Delivering
+          </Button>
+          <Button
+            type="link"
+            style={{ color: "red" }}
+            onClick={() => handleOnclick("DECLINED")}
+          >
+            Declined
+          </Button>
+        </Fragment>
+      );
+    case ECategoriesStatus.DELIVERING.code:
+      return (
+        <Button
+          type="link"
+          style={{ color: "lime" }}
+          onClick={() => handleOnclick("DELIVERED")}
+        >
+          Delivered
+        </Button>
+      );
+    default:
+      return null;
+  }
+};

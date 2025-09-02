@@ -4,10 +4,20 @@ export const ECategoriesStatus = {
     name: "Đã từ chối",
     color: "red",
   },
+  CONFIRMED: {
+    code: "CONFIRMED",
+    name: "Đã chấp nhận",
+    color: "cyan",
+  },
   DELIVERING: {
     code: "DELIVERING",
     name: "Đang giao hàng",
     color: "blue",
+  },
+  DELIVERED: {
+    code: "DELIVERED",
+    name: "Đã giao hàng",
+    color: "lime",
   },
   COMPLETED: {
     code: "COMPLETED",

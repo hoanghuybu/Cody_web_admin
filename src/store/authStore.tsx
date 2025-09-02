@@ -52,8 +52,8 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!window.location.pathname.includes("signin")) {
         const isAuthenticated = authService.isAuthenticated();
         const accessTokenCookie = Cookies.get("accessToken");
-        const parsed = JSON.parse(accessTokenCookie);
-        setUserInfo(parsed);
+        // const parsed = JSON.parse(accessTokenCookie);
+        setUserInfo(accessTokenCookie);
         const check = isAuthenticated ? true : false;
         if (check) {
           setLogged(true);
@@ -70,8 +70,8 @@ const AuthStoreProvider: React.FC<{ children: React.ReactNode }> = ({
     const accessTokenCookie = Cookies.get("accessToken");
     try {
       if (accessTokenCookie) {
-        const parsed = JSON.parse(accessTokenCookie);
-        setUserInfo(parsed);
+        // const parsed = JSON.parse(accessTokenCookie);
+        setUserInfo(accessTokenCookie);
       }
     } catch (e) {
       console.log(e);

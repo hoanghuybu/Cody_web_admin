@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { Suspense, useEffect } from "react";
+import { Suspense, useLayoutEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import AppLayout from "./layout/AppLayout";
@@ -31,7 +31,7 @@ import UsersManagement from "./pages/UsersManagement";
 function AppRouter() {
   const userInfo = Cookies.get("accessToken");
   const navigate = useNavigate();
-  useEffect(() => {
+  useLayoutEffect(() => {
     try {
       if (!window.location.pathname.includes("signin")) {
         const check = !userInfo ? true : false;

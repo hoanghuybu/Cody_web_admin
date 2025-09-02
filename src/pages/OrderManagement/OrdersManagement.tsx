@@ -49,11 +49,7 @@ function OrdersManagement() {
   });
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, closeModal, openModal } = useModal();
-  // const {
-  //   isOpen: isOpenCreate,
-  //   openModal: openModalCreate,
-  //   closeModal: closeModalCreate,
-  // } = useModal();
+  const [selectedData, setSelectedData] = useState(null);
 
   const {
     data: dataOrders,
@@ -97,29 +93,6 @@ function OrdersManagement() {
     });
   };
 
-  const handleOnclick = (status: string): void => {
-    console.log("HEHE:", status);
-    switch (status) {
-      case "PENDING":
-        console.log("PENDING");
-        break;
-      case "CONFIRMED":
-        console.log("CONFIRMED");
-        break;
-      case "SHIPPED":
-        console.log("SHIPPED");
-        break;
-      case "DELIVERED":
-        console.log("DELIVERED");
-        break;
-      case "CANCELLED":
-        console.log("CANCELLED");
-        break;
-      default:
-        return;
-    }
-  };
-
   const [activeTab, setActiveTab] = useState("all");
   return (
     <>
@@ -131,14 +104,6 @@ function OrdersManagement() {
               <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
                 Overview
               </h3>
-              {/* <Button
-                onClick={openModalCreate}
-                size="sm"
-                variant="primary"
-                startIcon={<PlusIcon />}
-              >
-                Create an Order
-              </Button> */}
             </div>
           }
         >
@@ -225,8 +190,8 @@ function OrdersManagement() {
               columns={getColumnsOrders({
                 filteredInfo,
                 sortedInfo,
-                handleOnclick,
                 openModal,
+                handleSelectedData: setSelectedData,
               })}
               pagination={{
                 current: pagination.current,
@@ -244,7 +209,7 @@ function OrdersManagement() {
       <OrderDetailModal
         onClose={closeModal}
         isOpen={isOpenDetail}
-        title="any"
+        initData={selectedData}
       />
       {/* <OrderCreateModal
         onClose={closeModalCreate}

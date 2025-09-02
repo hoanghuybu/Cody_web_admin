@@ -13,5 +13,7 @@ export const endpoints = {
   // #endregion
   // #region Orders
   orders_pagination: "/admin/orders/get-all",
+  orders_change_status: (id: string) => `/admin/orders/${id}/status`,
+  orders_detail: (id: string) => `/orders/${id}`,
   // #endregion
 };
