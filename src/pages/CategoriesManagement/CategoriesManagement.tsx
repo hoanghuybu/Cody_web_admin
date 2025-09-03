@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { DownloadOutlined } from "@ant-design/icons";
 import { Table as ATable } from "antd";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
@@ -13,6 +12,8 @@ import { usePaginationQuery } from "~/hooks/usePaginationQuery";
 import { FilterIcon, PlusIcon } from "~/icons";
 import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
+import CategoriesCreateModal from "./CategoriesCreateModal";
+import CategoriesDetailModal from "./CategoriesDetail";
 
 function CategoriesManagement() {
   const [filteredInfo, setFilteredInfo] = useState<
@@ -157,17 +158,17 @@ function CategoriesManagement() {
           </ComponentCard>
         </div>
       </div>
-      {/* <OrderDetailModal
+      <CategoriesDetailModal
         initData={selectedData}
         onClose={closeModal}
         isOpen={isOpenDetail}
         title="any"
       />
-      <OrderCreateModal
+      <CategoriesCreateModal
         onClose={closeModalCreate}
         isOpen={isOpenCreate}
-        title="any"
-      /> */}
+        title="Create Category"
+      />
     </Fragment>
   );
 }

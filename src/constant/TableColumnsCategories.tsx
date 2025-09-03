@@ -1,6 +1,6 @@
 import type { TableColumnsType } from "antd";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
-import ActionPopover from "~/pages/ProductManagement/components/ActionPopover";
+import ActionPopover from "~/pages/CategoriesManagement/components/ActionPopover";
 import { DataType } from "~/type";
 
 interface ColumnParams {
