@@ -10,6 +10,11 @@ export const endpoints = {
   /**endregion */
   // #region Categories
   categories_pagination: "/categories/get-all",
+  categories_create: "/categories/admin/create",
+  categories_detail: (id: string) => `/categories/id/${id}`,
+  categories_update: (id: string) => `/categories/admin/update/${id}`,
+  category_delete: (id: string) => `/categories/admin/${id}`,
+  /**endregion */
   // #endregion
   // #region Orders
   orders_pagination: "/admin/orders/get-all",

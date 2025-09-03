@@ -9,7 +9,7 @@ import Cookies from "js-cookie";
 import { EHttpStatus } from "../constants";
 import { ApiException, IObject, IObjectPromise } from "../dto";
 
-export type IAxiosRequestOptions = AxiosRequestConfig
+export type IAxiosRequestOptions = AxiosRequestConfig;
 // Removed IAxiosResponse as it was redundant
 export class AxiosHttpClient {
   [x: string]: any;
@@ -33,7 +33,9 @@ export class AxiosHttpClient {
     // Convert headers from string[][] to object if necessary
     const axiosOptions = { ...options };
     if (Array.isArray(axiosOptions.headers)) {
-      axiosOptions.headers = Object.fromEntries(axiosOptions.headers as string[][]);
+      axiosOptions.headers = Object.fromEntries(
+        axiosOptions.headers as string[][]
+      );
     }
     this.instance = Axios.create({
       baseURL: baseurl,
@@ -46,6 +48,7 @@ export class AxiosHttpClient {
       (error) => {
         if (error.response?.status === 401) {
           // Clear token và redirect về login
+          sessionStorage.setItem("authError", "Phiên đăng nhập đã hết hạn");
           Cookies.remove("accessToken");
           Cookies.remove("refreshToken");
           // Sử dụng window.location để redirect ngay lập tức
@@ -79,7 +82,11 @@ export class AxiosHttpClient {
     if (response) {
       const { data = {}, status = EHttpStatus.INTERNAL_SERVER_ERROR } =
         response;
-      const responseData = data as { message?: string; type?: string; businessCode?: number };
+      const responseData = data as {
+        message?: string;
+        type?: string;
+        businessCode?: number;
+      };
 
       if (responseData.message) {
         message = responseData.message;
@@ -99,7 +106,9 @@ export class AxiosHttpClient {
   private async intercept() {
     const entries = Object.entries(this.interceptors);
     const resolved = await Promise.all(
-      entries.map(([, promise]) => typeof promise === "function" ? promise() : Promise.resolve(promise))
+      entries.map(([, promise]) =>
+        typeof promise === "function" ? promise() : Promise.resolve(promise)
+      )
     );
     const headerAppend = entries.reduce((acc, [key], idx) => {
       acc[key] = resolved[idx];
@@ -167,10 +176,7 @@ export class AxiosHttpClient {
       throw this.handlerError(error);
     }
   }
-  async delete<T>(
-    endpoint: string,
-    body: any = {}
-  ): Promise<AxiosResponse<T>> {
+  async delete<T>(endpoint: string, body: any = {}): Promise<AxiosResponse<T>> {
     try {
       const headers = await this.intercept();
       const url = endpoint.trim();
