@@ -23,8 +23,6 @@ function OrderDetailModal({
     shouldLoadDetail ? initData?.orderId : undefined
   );
 
-  console.log(shouldLoadDetail);
-
   const formatCurrency = (value: number) =>
     value?.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
