@@ -31,7 +31,6 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
     initData?.id
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: detailProduct, isLoading: isLoadingDetail } =
     useLoadDetailProduct(shouldLoadDetail ? initData?.id : undefined);
 
@@ -62,21 +61,27 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
   }, [detailProduct]);
 
   useEffect(() => {
-    if (isOpen && initData?.id) {
+    if (isOpen && !!initData?.id) {
       setShouldLoadDetail(true);
     }
   }, [isOpen, initData]);
 
   return (
-    <OrderCreateModal
-      isEdit={true}
-      isLoadingUpdate={isLoading}
-      handleUpdate={handleSave}
-      title="Update Product"
-      initialValue={input}
-      isOpen={isOpen}
-      onClose={onClose}
-    />
+    <>
+      {isLoadingDetail ? (
+        <div>Loading...</div>
+      ) : (
+        <OrderCreateModal
+          isEdit={true}
+          isLoadingUpdate={isLoading}
+          handleUpdate={handleSave}
+          title="Update Product"
+          initialValue={input}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      )}
+    </>
   );
 }
 

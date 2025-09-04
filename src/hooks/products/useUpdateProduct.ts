@@ -21,6 +21,9 @@ export const useUpdateProduct = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: [endpoints.pagination],
       });
+      queryClient.invalidateQueries({
+        queryKey: [endpoints.product_detail(id)],
+      });
       toastService.success(res.message);
     },
     onError: (error: any) => {
