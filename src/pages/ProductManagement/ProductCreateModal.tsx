@@ -127,7 +127,37 @@ function ProductCreateModal(props: ProductCreateModalProps) {
               ],
       };
       if (isEdit) {
-        handleUpdate(body);
+        let newLstCategory: {
+          categoryId: string;
+          action: "KEEP" | "ADD" | "REMOVE";
+        }[] = [];
+        const oldCategoryIds: string[] = initialValue?.categoryIds || [];
+        const newCategoryIds: string[] = values?.categoryIds || [];
+
+        // KEEP hoặc ADD
+        newLstCategory = newCategoryIds.map((id) => {
+          if (oldCategoryIds.includes(id)) {
+            return { categoryId: id, action: "KEEP" };
+          }
+          return { categoryId: id, action: "ADD" };
+        });
+
+        // REMOVE
+        const removedCategories = oldCategoryIds.filter(
+          (oldId) => !newCategoryIds.includes(oldId)
+        );
+        removedCategories.forEach((id) => {
+          newLstCategory.push({ categoryId: id, action: "REMOVE" });
+        });
+
+        newLstCategory = newLstCategory.filter(
+          (cate) => cate.action !== "KEEP"
+        );
+
+        handleUpdate({
+          ...body,
+          category: [...newLstCategory],
+        });
       } else {
         const result = await onCreateProduct(body);
         if (result?.status === 200) {
