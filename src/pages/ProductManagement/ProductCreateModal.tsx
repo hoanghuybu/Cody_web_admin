@@ -12,7 +12,8 @@ import {
 import { useEffect, useMemo } from "react";
 import FileInput from "~/components/form/input/FileInput";
 import Button from "~/components/ui/button/Button";
-import { usePaginationCategory } from "~/hooks/categories/usePaginationCategory";
+import { useSelectBoxCategory } from "~/hooks/categories/useSelectBoxCategory";
+
 import useCreateProduct from "~/hooks/products/useCreateProduct";
 import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
 
@@ -55,7 +56,7 @@ function ProductCreateModal(props: ProductCreateModalProps) {
 
   const { onCreateProduct, isLoading } = useCreateProduct();
   const { data: lstCategories, isLoading: isLoadingCategory } =
-    usePaginationCategory();
+    useSelectBoxCategory();
   const { data: dataProducts, isLoading: isLoadingProduct } =
     usePaginationProduct();
 

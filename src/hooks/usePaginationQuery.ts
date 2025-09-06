@@ -11,15 +11,13 @@ export const usePaginationQuery = <T>(
   const { data, isLoading, refetch, error } = useQuery({
     queryKey: [endpoint, params],
     queryFn: async () => {
-      const query = new URLSearchParams({
-        page: String(page),
-        size: String(size),
-        ...Object.fromEntries(
-          Object.entries(rest).map(([k, v]) => [k, String(v)])
-        ),
-      });
+      const cleanParams = Object.fromEntries(
+        Object.entries({ page, size, ...rest }).filter(
+          ([, v]) => v !== undefined && v !== null && String(v) !== ""
+        )
+      );
 
-      const res = await rootApiService.get(`${endpoint}?${query.toString()}`);
+      const res = await rootApiService.get(endpoint, cleanParams);
       return res.data as PaginationResponse<T>;
     },
   });
