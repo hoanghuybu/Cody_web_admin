@@ -5,6 +5,7 @@ import { DataType } from "~/type";
 
 interface ColumnParams {
   filteredInfo: Record<string, FilterValue | null>;
+  categories?: any[];
   sortedInfo: SorterResult<DataType>;
   openModal: () => void;
   handleSelectedData: (value: any) => void;
@@ -13,29 +14,32 @@ interface ColumnParams {
 export const getColumnsProducts = ({
   filteredInfo,
   sortedInfo,
+  categories,
   openModal,
   handleSelectedData,
 }: ColumnParams): TableColumnsType<DataType> => {
+  const categoryFilter = categories.map((cate: any) => ({
+    text: cate.name,
+    value: cate.id,
+  }));
   return [
     {
       title: "Product Name",
       dataIndex: "name",
       key: "name",
-      filters: [
-        { text: "Bánh dừa nướng Bến Tre", value: "Bánh dừa nướng Bến Tre" },
-        { text: "Test tên sản phẩm", value: "Test tên sản phẩm" },
-      ],
-      filteredValue: filteredInfo.name || null,
-      onFilter: (value, record) => record.name.includes(value as string),
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortOrder: sortedInfo.columnKey === "name" ? sortedInfo.order : null,
       ellipsis: true,
     },
-
     {
       title: "Price Range",
       dataIndex: "price",
       key: "price",
+    },
+    {
+      title: "Categories",
+      dataIndex: "lstCateName",
+      key: "categoryId",
+      filters: categoryFilter,
+      filteredValue: filteredInfo.categoryId || null,
     },
     {
       title: "Stock Quantity",

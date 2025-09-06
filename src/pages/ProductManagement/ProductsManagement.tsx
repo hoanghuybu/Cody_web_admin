@@ -6,9 +6,11 @@ import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
 import Button from "~/components/ui/button/Button";
 import { getColumnsProducts } from "~/constant/TableColumnsProducts";
+import { useSelectBoxCategory } from "~/hooks/categories/useSelectBoxCategory";
+import { useDebounce } from "~/hooks/useDebounce";
 import { useModal } from "~/hooks/useModal";
 import { usePaginationQuery } from "~/hooks/usePaginationQuery";
-import { FilterIcon, PlusIcon } from "~/icons";
+import { PlusIcon } from "~/icons";
 import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
 import ProductCreateModal from "./ProductCreateModal";
@@ -23,10 +25,13 @@ function ProductsManagement() {
     pageSize: 10,
     sortBy: "createdAt",
     sortDirection: "DESC",
+    categoryId: null,
   });
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, openModal, closeModal } = useModal();
   const [selectedData, setSelectedData] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const debouncedSearch = useDebounce<string>(searchValue, 500);
   const {
     isOpen: isOpenCreate,
     openModal: openModalCreate,
@@ -35,6 +40,7 @@ function ProductsManagement() {
 
   // #region  hook api
   // const { data: dataProductsOld } = usePaginationProduct();
+  const { data: categories } = useSelectBoxCategory();
   const {
     data: dataProducts,
     total,
@@ -46,8 +52,14 @@ function ProductsManagement() {
       size: pagination.pageSize,
       sortBy: pagination.sortBy,
       sortDirection: pagination.sortDirection,
+      categoryId: pagination.categoryId,
+      keyword: debouncedSearch,
     }
   );
+  const formatDataProduct = dataProducts?.map((item) => ({
+    ...item,
+    lstCateName: item?.categories?.map((cate: any) => cate.name).join(", "),
+  }));
   //#endregion
   // #region Function
   const handleChange: OnChange = (paginationConfig, filters, sorter) => {
@@ -60,6 +72,7 @@ function ProductsManagement() {
       pageSize: paginationConfig.pageSize,
       sortBy: sortObj?.field?.toString() || "createdAt",
       sortDirection: sortObj?.order === "ascend" ? "ASC" : "DESC",
+      categoryId: filters.categoryId?.[0] || undefined,
     });
   };
   // #endregion
@@ -124,15 +137,22 @@ function ProductsManagement() {
                           <input
                             type="text"
                             placeholder="Search ..."
+                            onChange={(e) => {
+                              setSearchValue(e.target.value);
+                              setPagination((prev) => ({
+                                ...prev,
+                                current: 1,
+                              }));
+                            }}
                             className="dark:bg-dark-900 h-11 w-full rounded-lg border-2 border-gray-300 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-700 xl:w-[300px]"
                           />
                         </div>
                       </form>
                     </div>
-                    <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+                    {/* <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
                       <FilterIcon />
                       Filter
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </>
@@ -144,6 +164,7 @@ function ProductsManagement() {
                 sortedInfo,
                 openModal,
                 handleSelectedData: setSelectedData,
+                categories,
               })}
               pagination={{
                 current: pagination.current,
@@ -151,7 +172,7 @@ function ProductsManagement() {
                 total: total,
                 showSizeChanger: true,
               }}
-              dataSource={dataProducts}
+              dataSource={formatDataProduct}
               loading={isLoading}
               onChange={handleChange}
             />
