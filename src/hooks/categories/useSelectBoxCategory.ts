@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { rootApiService } from "~/services";
 import { endpoints } from "~/services/endpoints";
 
-export const usePaginationCategory = () => {
+export const useSelectBoxCategory = () => {
   const { data, isLoading, refetch, error } = useQuery({
     queryKey: [endpoints.categories_pagination],
     queryFn: () => rootApiService.get(endpoints.categories_pagination),
