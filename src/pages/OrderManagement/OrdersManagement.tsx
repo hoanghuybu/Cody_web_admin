@@ -5,9 +5,9 @@ import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
 import ButtonGroupTabs from "~/components/ui/button/ButtonGroupTabs";
 import { getColumnsOrders } from "~/constant/TableColumnsOrders";
+import { useDebounce } from "~/hooks/useDebounce";
 import { useModal } from "~/hooks/useModal";
 import { usePaginationQuery } from "~/hooks/usePaginationQuery";
-import { FilterIcon } from "~/icons";
 import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
 import OrderDetailModal from "./OrderDetail";
@@ -33,16 +33,16 @@ function OrdersManagement() {
     },
   ];
   const tabs = [
-    { label: "All Invoices", value: "all" },
-    { label: "Unpaid", value: "unpaid" },
-    { label: "Draft", value: "draft", disabled: false },
+    { label: "All", value: "all" },
+    { label: "Pending", value: "pending" },
+    { label: "Processing", value: "processing" },
   ];
 
   const [filteredInfo, setFilteredInfo] = useState<
     Record<string, FilterValue | null>
   >({});
   const [pagination, setPagination] = useState({
-    current: 1, // AntD dùng 1-based
+    current: 1,
     pageSize: 10,
     sortBy: "createdAt",
     sortDirection: "DESC",
@@ -50,6 +50,8 @@ function OrdersManagement() {
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, closeModal, openModal } = useModal();
   const [selectedData, setSelectedData] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const debouncedSearch = useDebounce<string>(searchValue, 500);
 
   const {
     data: dataOrders,
@@ -60,6 +62,7 @@ function OrdersManagement() {
     size: pagination.pageSize,
     sortBy: pagination.sortBy,
     sortDirection: pagination.sortDirection,
+    buyerName: debouncedSearch,
   });
 
   const formatDataOrders = dataOrders?.map((item) => {
@@ -167,16 +170,23 @@ function OrdersManagement() {
                         <input
                           type="text"
                           placeholder="Search ..."
+                          onChange={(e) => {
+                            setSearchValue(e.target.value);
+                            setPagination((prev) => ({
+                              ...prev,
+                              current: 1,
+                            }));
+                          }}
                           className="dark:bg-dark-900 h-11 w-full rounded-lg border-2 border-gray-300 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-700 xl:w-[300px]"
                         />
                       </div>
                     </form>
                   </div>
                   <div className="flex items-center gap-3">
-                    <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+                    {/* <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
                       <FilterIcon />
                       Filter
-                    </button>
+                    </button> */}
                     <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
                       Export
                     </button>

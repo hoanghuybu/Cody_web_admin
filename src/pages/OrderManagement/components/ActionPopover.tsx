@@ -1,7 +1,7 @@
 import { MoreOutlined } from "@ant-design/icons";
 import { Button, Modal, Popover } from "antd";
 import { Fragment, useRef, useState } from "react";
-import { CategoriesStatusKey, ECategoriesStatus } from "~/constant/ECategories";
+import { CategoriesStatusKey, EOrdersStatus } from "~/constant/EOrders";
 import useChangeStatusOrder from "~/hooks/orders/useChangeStatusOrder";
 
 const ActionPopover = ({ record, handleSelectedData, openModal }: any) => {
@@ -10,37 +10,36 @@ const ActionPopover = ({ record, handleSelectedData, openModal }: any) => {
     record?.orderId ?? null
   );
 
-  const statusName =
-    ECategoriesStatus[record?.status?.name as CategoriesStatusKey];
+  const statusName = EOrdersStatus[record?.status?.name as CategoriesStatusKey];
   const [popoverVisible, setPopoverVisible] = useState(false);
 
   const handleOnclick = (status: string): void => {
     switch (status) {
-      case ECategoriesStatus.PENDING.code:
+      case EOrdersStatus.PENDING.code:
         handleChangeStatus(status);
         break;
-      case ECategoriesStatus.CONFIRMED.code:
+      case EOrdersStatus.CONFIRMED.code:
         bodyRef.current = {
           deliveryStatus: "CF",
           paymentStatus: null,
         };
         handleChangeStatus(status);
         break;
-      case ECategoriesStatus.DELIVERING.code:
+      case EOrdersStatus.DELIVERING.code:
         bodyRef.current = {
           deliveryStatus: "DLN",
           paymentStatus: null,
         };
         handleChangeStatus(status);
         break;
-      case ECategoriesStatus.DELIVERED.code:
+      case EOrdersStatus.DELIVERED.code:
         bodyRef.current = {
           deliveryStatus: "DLD",
           paymentStatus: "PD",
         };
         handleChangeStatus(status);
         break;
-      case ECategoriesStatus.DECLINED.code:
+      case EOrdersStatus.DECLINED.code:
         bodyRef.current = {
           deliveryStatus: "DC",
           paymentStatus: null,
@@ -56,7 +55,7 @@ const ActionPopover = ({ record, handleSelectedData, openModal }: any) => {
   };
 
   const handleChangeStatus = (status: string) => {
-    const changedStatus = ECategoriesStatus[status as CategoriesStatusKey];
+    const changedStatus = EOrdersStatus[status as CategoriesStatusKey];
     Modal.confirm({
       title: "Xác nhận thay đổi trạng thái?",
       content: `Bạn có chắc chắn muốn thay đổi sản phẩm từ "${statusName?.name}" thành "${changedStatus?.name}" không?`,
@@ -109,7 +108,7 @@ const _renderButtonChangeStatus = (
   handleOnclick: (status: string) => void
 ) => {
   switch (status) {
-    case ECategoriesStatus.PENDING.code:
+    case EOrdersStatus.PENDING.code:
       return (
         <Fragment>
           <Button
@@ -128,7 +127,7 @@ const _renderButtonChangeStatus = (
           </Button>
         </Fragment>
       );
-    case ECategoriesStatus.CONFIRMED.code:
+    case EOrdersStatus.CONFIRMED.code:
       return (
         <Fragment>
           <Button
@@ -147,7 +146,7 @@ const _renderButtonChangeStatus = (
           </Button>
         </Fragment>
       );
-    case ECategoriesStatus.DELIVERING.code:
+    case EOrdersStatus.DELIVERING.code:
       return (
         <Button
           type="link"

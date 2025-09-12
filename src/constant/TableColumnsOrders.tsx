@@ -3,7 +3,7 @@ import { Tag } from "antd";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import ActionPopover from "~/pages/OrderManagement/components/ActionPopover";
 import { DataType } from "~/type";
-import { CategoriesStatusKey, ECategoriesStatus } from "./ECategories";
+import { CategoriesStatusKey, EOrdersStatus } from "./EOrders";
 
 interface ColumnParams {
   filteredInfo: Record<string, FilterValue | null>;
@@ -38,6 +38,11 @@ export const getColumnsOrders = ({
       // ellipsis: true,
     },
     {
+      title: "Seller Name",
+      dataIndex: "sellerName",
+      key: "sellerName",
+    },
+    {
       title: "Product Name",
       dataIndex: "productName",
       key: "productName",
@@ -56,10 +61,10 @@ export const getColumnsOrders = ({
         const statusName: CategoriesStatusKey = status?.name;
         return (
           <Tag
-            color={ECategoriesStatus[statusName]?.color}
-            // style={{ color: ECategoriesStatus[statusName]?.color }}
+            color={EOrdersStatus[statusName]?.color}
+            // style={{ color: EOrdersStatus[statusName]?.color }}
           >
-            {ECategoriesStatus[statusName]?.name}
+            {EOrdersStatus[statusName]?.eName}
           </Tag>
         );
       },

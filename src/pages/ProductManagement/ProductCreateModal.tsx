@@ -132,8 +132,14 @@ function ProductCreateModal(props: ProductCreateModalProps) {
           categoryId: string;
           action: "KEEP" | "ADD" | "REMOVE";
         }[] = [];
+        // let newLstProduct: {
+        //   categoryId: string;
+        //   action: "KEEP" | "ADD" | "REMOVE";
+        // }[] = [];
         const oldCategoryIds: string[] = initialValue?.categoryIds || [];
         const newCategoryIds: string[] = values?.categoryIds || [];
+        // const oldProductIds: string[] = initialValue?.categoryIds || [];
+        // const newProductIds: string[] = values?.categoryIds || [];
 
         // KEEP hoặc ADD
         newLstCategory = newCategoryIds.map((id) => {
@@ -165,7 +171,6 @@ function ProductCreateModal(props: ProductCreateModalProps) {
           message.success("Tạo sản phẩm thành công");
           onClose();
         } else {
-          console.log("Create product failed", result);
           message.error("Tạo sản phẩm thất bại");
         }
       }

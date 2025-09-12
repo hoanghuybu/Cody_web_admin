@@ -9,7 +9,7 @@ export const endpoints = {
   product_detail: (id: string) => `/products/id/${id}`,
   /**endregion */
   // #region Categories
-  categories_pagination: "/categories/get-all",
+  categories_pagination: "/categories/search",
   categories_create: "/categories/admin/create",
   categories_detail: (id: string) => `/categories/id/${id}`,
   categories_update: (id: string) => `/categories/admin/update/${id}`,
