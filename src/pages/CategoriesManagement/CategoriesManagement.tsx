@@ -7,6 +7,7 @@ import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
 import Button from "~/components/ui/button/Button";
 import { getColumnsCategories } from "~/constant/TableColumnsCategories";
+import { useDebounce } from "~/hooks/useDebounce";
 import { useModal } from "~/hooks/useModal";
 import { usePaginationQuery } from "~/hooks/usePaginationQuery";
 import { FilterIcon, PlusIcon } from "~/icons";
@@ -28,6 +29,8 @@ function CategoriesManagement() {
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
   const { isOpen: isOpenDetail, openModal, closeModal } = useModal();
   const [selectedData, setSelectedData] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const debouncedSearch = useDebounce<string>(searchValue, 500);
   const {
     isOpen: isOpenCreate,
     openModal: openModalCreate,
@@ -47,6 +50,7 @@ function CategoriesManagement() {
       size: pagination.pageSize,
       sortBy: pagination.sortBy,
       sortDirection: pagination.sortDirection,
+      keyword: debouncedSearch,
     }
   );
   //#endregion
@@ -92,7 +96,7 @@ function CategoriesManagement() {
                       variant="primary"
                       startIcon={<PlusIcon />}
                     >
-                      Create an Product
+                      Create Category
                     </Button>
                   </div>
                 </div>
@@ -124,6 +128,13 @@ function CategoriesManagement() {
                           <input
                             type="text"
                             placeholder="Search ..."
+                            onChange={(e) => {
+                              setSearchValue(e.target.value);
+                              setPagination((prev) => ({
+                                ...prev,
+                                current: 1,
+                              }));
+                            }}
                             className="dark:bg-dark-900 h-11 w-full rounded-lg border-2 border-gray-300 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-700 xl:w-[300px]"
                           />
                         </div>

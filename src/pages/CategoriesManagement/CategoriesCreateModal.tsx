@@ -47,7 +47,6 @@ function CategoriesCreateModal(props: CategoryCreateModalProps) {
           message.success("Tạo loại sản phẩm thành công");
           onClose();
         } else {
-          console.log("Create product failed", result);
           message.error("Tạo loại sản phẩm thất bại");
         }
       }
