@@ -12,6 +12,7 @@ import BarChart from "./pages/Charts/BarChart";
 import LineChart from "./pages/Charts/LineChart";
 import Home from "./pages/Dashboard/Home";
 import FormElements from "./pages/Forms/FormElements";
+import LoadingPage from "./pages/LoadingPage";
 import OrdersManagement from "./pages/OrderManagement/OrdersManagement";
 import NotFound from "./pages/OtherPage/NotFound";
 import ProductsManagement from "./pages/ProductManagement/ProductsManagement";
@@ -44,7 +45,7 @@ function AppRouter() {
     }
   }, [userInfo, navigate]);
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingPage />}>
       <ScrollToTop />
       <Routes>
         {/* Dashboard Layout */}

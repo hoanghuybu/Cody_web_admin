@@ -12,7 +12,7 @@ export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { onLogin, isLoading } = useLogin();
+  const { onLogin } = useLogin();
   const [isChecked, setIsChecked] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -22,10 +22,7 @@ export default function SignInForm() {
       password: password,
     }).then(() => navigate("/"));
   };
-  // eslint-disable-next-line no-extra-boolean-cast
-  if (!!isLoading) {
-    return <div className="flex flex-col flex-1">Loading..</div>;
-  }
+
   return (
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">

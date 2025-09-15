@@ -2,6 +2,7 @@ import { message } from "antd";
 import { useEffect, useState } from "react";
 import { useLoadDetailProduct } from "~/hooks/products/useLoadDetailProduct";
 import { useUpdateProduct } from "~/hooks/products/useUpdateProduct";
+import LoadingPage from "../LoadingPage";
 import OrderCreateModal from "./ProductCreateModal";
 
 interface ProductDetailDetailProps {
@@ -69,7 +70,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
   return (
     <>
       {isLoadingDetail ? (
-        <div>Loading...</div>
+        <LoadingPage />
       ) : (
         <OrderCreateModal
           isEdit={true}
