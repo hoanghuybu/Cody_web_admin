@@ -146,16 +146,6 @@ const _renderButtonChangeStatus = (
           </Button>
         </Fragment>
       );
-    case EOrdersStatus.DELIVERING.code:
-      return (
-        <Button
-          type="link"
-          style={{ color: "lime" }}
-          onClick={() => handleOnclick("DELIVERED")}
-        >
-          Delivered
-        </Button>
-      );
     default:
       return null;
   }

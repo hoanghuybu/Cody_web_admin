@@ -3,7 +3,12 @@ import { Tag } from "antd";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import ActionPopover from "~/pages/OrderManagement/components/ActionPopover";
 import { DataType } from "~/type";
-import { CategoriesStatusKey, EOrdersStatus } from "./EOrders";
+import {
+  CategoriesStatusKey,
+  EOrdersStatus,
+  EPaymentStatus,
+  PaymentStatusKey,
+} from "./EOrders";
 
 interface ColumnParams {
   filteredInfo: Record<string, FilterValue | null>;
@@ -14,7 +19,7 @@ interface ColumnParams {
 }
 
 export const getColumnsOrders = ({
-  // filteredInfo,
+  filteredInfo,
   // sortedInfo,
   // handleOnclick,
   openModal,
@@ -25,28 +30,8 @@ export const getColumnsOrders = ({
       title: "Customer Name",
       dataIndex: "customerName",
       key: "customerName",
-      // filters: [
-      //   { text: "Nguyễn Văn A", value: "Nguyễn Văn A" },
-      //   { text: "Trần Thị B", value: "Trần Thị B" },
-      // ],
-      // filteredValue: filteredInfo.customerName || null,
-      // onFilter: (value, record) =>
-      //   record.customerName.includes(value as string),
-      // sorter: (a, b) => a.customerName.length - b.customerName.length,
-      // sortOrder:
-      //   sortedInfo.columnKey === "customerName" ? sortedInfo.order : null,
-      // ellipsis: true,
     },
-    {
-      title: "Seller Name",
-      dataIndex: "sellerName",
-      key: "sellerName",
-    },
-    {
-      title: "Product Name",
-      dataIndex: "productName",
-      key: "productName",
-    },
+
     {
       title: "Created Date",
       dataIndex: "createdAt",
@@ -57,15 +42,40 @@ export const getColumnsOrders = ({
       title: "Status",
       dataIndex: "status",
       key: "status",
+      filters: Object.values(EOrdersStatus).map((st) => ({
+        text: st.eName,
+        value: st.code,
+      })),
+      filteredValue: filteredInfo.status || null,
+
       render: (status) => {
         const statusName: CategoriesStatusKey = status?.name;
         return (
-          <Tag
-            color={EOrdersStatus[statusName]?.color}
-            // style={{ color: EOrdersStatus[statusName]?.color }}
-          >
+          <Tag color={EOrdersStatus[statusName]?.color}>
             {EOrdersStatus[statusName]?.eName}
           </Tag>
+        );
+      },
+    },
+    {
+      title: "Payment Status",
+      dataIndex: "paymentStatus",
+      key: "paymentStatus",
+      filters: Object.values(EPaymentStatus).map((st) => ({
+        text: st.eName,
+        value: st.code,
+      })),
+      filteredValue: filteredInfo.paymentStatus || null,
+      render: (paymentStatus) => {
+        const statusName: PaymentStatusKey = paymentStatus?.name;
+        return (
+          <>
+            {statusName ? (
+              <Tag color={EPaymentStatus[statusName]?.color}>
+                {EPaymentStatus[statusName]?.eName}
+              </Tag>
+            ) : null}
+          </>
         );
       },
     },

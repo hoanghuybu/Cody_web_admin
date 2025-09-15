@@ -3,8 +3,8 @@ import { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useState } from "react";
 import ComponentCard from "~/components/common/ComponentCard";
 import PageBreadcrumb from "~/components/common/PageBreadCrumb";
-import ButtonGroupTabs from "~/components/ui/button/ButtonGroupTabs";
 import { getColumnsOrders } from "~/constant/TableColumnsOrders";
+import { mapFrontendFiltersToApiParams } from "~/helper/status-mapping";
 import { useDebounce } from "~/hooks/useDebounce";
 import { useModal } from "~/hooks/useModal";
 import { usePaginationQuery } from "~/hooks/usePaginationQuery";
@@ -20,8 +20,8 @@ function OrdersManagement() {
       value: "$120.80",
     },
     {
-      title: "Due within next 30 days",
-      value: "0.00",
+      title: "Total Products Sold",
+      value: "1000",
     },
     {
       title: "Average time to get paid",
@@ -32,11 +32,11 @@ function OrdersManagement() {
       value: "$3,450.50",
     },
   ];
-  const tabs = [
-    { label: "All", value: "all" },
-    { label: "Pending", value: "pending" },
-    { label: "Processing", value: "processing" },
-  ];
+  // const tabs = [
+  //   { label: "All", value: "all" },
+  //   { label: "Pending", value: "pending" },
+  //   { label: "Processing", value: "processing" },
+  // ];
 
   const [filteredInfo, setFilteredInfo] = useState<
     Record<string, FilterValue | null>
@@ -52,7 +52,7 @@ function OrdersManagement() {
   const [selectedData, setSelectedData] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearch = useDebounce<string>(searchValue, 500);
-
+  const apiFilter = mapFrontendFiltersToApiParams(filteredInfo);
   const {
     data: dataOrders,
     total,
@@ -63,6 +63,9 @@ function OrdersManagement() {
     sortBy: pagination.sortBy,
     sortDirection: pagination.sortDirection,
     buyerName: debouncedSearch,
+    mainStatus: apiFilter.mainStatus,
+    deliveryStatus: apiFilter.deliveryStatus,
+    paymentStatus: apiFilter.paymentStatus,
   });
 
   const formatDataOrders = dataOrders?.map((item) => {
@@ -96,7 +99,7 @@ function OrdersManagement() {
     });
   };
 
-  const [activeTab, setActiveTab] = useState("all");
+  // const [activeTab, setActiveTab] = useState("all");
   return (
     <>
       <div>
@@ -139,11 +142,11 @@ function OrdersManagement() {
                   Overview
                 </h3>
                 <div className="flex gap-3">
-                  <ButtonGroupTabs
+                  {/* <ButtonGroupTabs
                     tabs={tabs}
                     activeValue={activeTab}
                     onChange={(val) => setActiveTab(val)}
-                  />
+                  /> */}
                   <div className="hidden lg:block">
                     <form
                       action="https://formbold.com/s/unique_form_id"
