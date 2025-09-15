@@ -13,7 +13,7 @@ interface ColumnParams {
 
 export const getColumnsProducts = ({
   filteredInfo,
-  sortedInfo,
+  // sortedInfo,
   categories,
   openModal,
   handleSelectedData,

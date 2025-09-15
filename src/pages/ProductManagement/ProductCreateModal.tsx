@@ -52,6 +52,8 @@ function ProductCreateModal(props: ProductCreateModalProps) {
     handleUpdate,
   } = props;
 
+  console.log("initialValue", initialValue);
+
   const [form] = Form.useForm();
 
   const { onCreateProduct, isLoading } = useCreateProduct();
@@ -132,14 +134,14 @@ function ProductCreateModal(props: ProductCreateModalProps) {
           categoryId: string;
           action: "KEEP" | "ADD" | "REMOVE";
         }[] = [];
-        // let newLstProduct: {
-        //   categoryId: string;
-        //   action: "KEEP" | "ADD" | "REMOVE";
-        // }[] = [];
+        let newLstProduct: {
+          productIncludedId: string;
+          action: "KEEP" | "ADD" | "REMOVE";
+        }[] = [];
         const oldCategoryIds: string[] = initialValue?.categoryIds || [];
         const newCategoryIds: string[] = values?.categoryIds || [];
-        // const oldProductIds: string[] = initialValue?.categoryIds || [];
-        // const newProductIds: string[] = values?.categoryIds || [];
+        const oldProductIds: string[] = initialValue?.includedIds || [];
+        const newProductIds: string[] = values?.includedIds || [];
 
         // KEEP hoặc ADD
         newLstCategory = newCategoryIds.map((id) => {
@@ -147,6 +149,12 @@ function ProductCreateModal(props: ProductCreateModalProps) {
             return { categoryId: id, action: "KEEP" };
           }
           return { categoryId: id, action: "ADD" };
+        });
+        newLstProduct = newProductIds.map((id) => {
+          if (oldProductIds.includes(id)) {
+            return { productIncludedId: id, action: "KEEP" };
+          }
+          return { productIncludedId: id, action: "ADD" };
         });
 
         // REMOVE
@@ -160,10 +168,19 @@ function ProductCreateModal(props: ProductCreateModalProps) {
         newLstCategory = newLstCategory.filter(
           (cate) => cate.action !== "KEEP"
         );
+        const removedProducts = oldProductIds.filter(
+          (oldId) => !newProductIds.includes(oldId)
+        );
+        removedProducts.forEach((id) => {
+          newLstProduct.push({ productIncludedId: id, action: "REMOVE" });
+        });
+
+        newLstProduct = newLstProduct.filter((cate) => cate.action !== "KEEP");
 
         handleUpdate({
           ...body,
           category: [...newLstCategory],
+          includedProduct: [...newLstProduct],
         });
       } else {
         const result = await onCreateProduct(body);

@@ -55,7 +55,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
         stockQuantity: detailProduct?.stockQuantity,
         categoryIds: detailProduct?.categories?.map((c: any) => c?.id),
         images: detailProduct?.images,
-        includedIds: detailProduct?.product?.map((c: any) => c?.id),
+        includedIds: detailProduct?.products?.map((c: any) => c?.id),
       });
     }
   }, [detailProduct]);
