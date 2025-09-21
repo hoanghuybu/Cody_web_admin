@@ -22,6 +22,9 @@ export const useUpdateCategory = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: [endpoints.categories_pagination],
       });
+      queryClient.invalidateQueries({
+        queryKey: [endpoints.categories_detail(id)],
+      });
       message.success(res.message);
     },
     onError: (error: any) => {

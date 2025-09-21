@@ -3,10 +3,13 @@ import { Input as AntInput, Form, message, Modal } from "antd";
 import { useEffect } from "react";
 import Button from "~/components/ui/button/Button";
 import useCreateCategory from "~/hooks/categories/useCreateCategory";
+import { useLockBodyScroll } from "~/hooks/useLockBodyScroll";
+import LoadingPage from "../LoadingPage";
 
 interface CategoryCreateModalProps {
   title: string;
   isOpen: boolean;
+  isLoading?: boolean;
   isLoadingUpdate?: boolean;
   onClose: () => void;
   isEdit?: boolean;
@@ -17,6 +20,7 @@ interface CategoryCreateModalProps {
 function CategoriesCreateModal(props: CategoryCreateModalProps) {
   const {
     title = "Create Category",
+    isLoading,
     isLoadingUpdate,
     isOpen,
     onClose,
@@ -27,8 +31,10 @@ function CategoriesCreateModal(props: CategoryCreateModalProps) {
 
   const [form] = Form.useForm();
 
-  const { onCreateCategory, isLoading } = useCreateCategory();
+  const { onCreateCategory, isLoading: isLoadingCreate } = useCreateCategory();
+  useLockBodyScroll(isOpen);
 
+  const loading = isLoading;
   // Submit form
   const onFinish = async (values: any) => {
     try {
@@ -76,113 +82,125 @@ function CategoriesCreateModal(props: CategoryCreateModalProps) {
       width={900}
       destroyOnHidden={true}
     >
-      <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11 max-h-[800px]">
-        <div className="px-2 pr-14">
-          <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-            {title}
-          </h4>
-          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+      {loading && <LoadingPage />}
+      {!loading && (
+        <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11 max-h-[800px]">
+          <div className="px-2 pr-14 text-center">
+            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+              {title}
+            </h4>
+            {/* <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
             Update your details to keep your profile up-to-date.
-          </p>
-        </div>
+          </p> */}
+          </div>
 
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={{
-            name: null,
-            description: null,
-            slug: null,
-            metaDescription: null,
-            price: null,
-            includedIds: null,
-            originalPrice: null,
-            stockQuantity: null,
-            categoryIds: null,
-            images: null,
-            isHidden: true,
-            ...initialValue,
-          }}
-          onFinish={onFinish}
-          onFinishFailed={(err) => console.log("Form validation failed:", err)}
-        >
-          <div className="px-2 overflow-y-auto custom-scrollbar">
-            <div className="grid grid-cols-1 gap-x-6 gap-y-5">
-              <Form.Item
-                label="Name"
-                name="name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tên loại sản phẩm",
-                  },
-                ]}
-              >
-                <AntInput placeholder="Nhập tên loại sản phẩm" />
-              </Form.Item>
+          <Form
+            form={form}
+            layout="vertical"
+            initialValues={{
+              name: null,
+              description: null,
+              slug: null,
+              metaDescription: null,
+              price: null,
+              includedIds: null,
+              originalPrice: null,
+              stockQuantity: null,
+              categoryIds: null,
+              images: null,
+              isHidden: true,
+              ...initialValue,
+            }}
+            onFinish={onFinish}
+            onFinishFailed={(err) =>
+              console.log("Form validation failed:", err)
+            }
+          >
+            <div className="px-2 overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-0">
+                <Form.Item
+                  label="Name"
+                  name="name"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập tên loại sản phẩm",
+                    },
+                  ]}
+                >
+                  <AntInput placeholder="Nhập tên loại sản phẩm" />
+                </Form.Item>
 
-              <Form.Item
-                label="Slug"
-                name="slug"
-                rules={[{ required: true, message: "Vui lòng nhập slug" }]}
-                validateTrigger={["onBlur", "onSubmit"]}
-              >
-                <AntInput placeholder="vd: keo-dua-ben-tre" />
-              </Form.Item>
+                <Form.Item
+                  label="Slug"
+                  name="slug"
+                  rules={[{ required: true, message: "Vui lòng nhập slug" }]}
+                  validateTrigger={["onBlur", "onSubmit"]}
+                >
+                  <AntInput placeholder="vd: keo-dua-ben-tre" />
+                </Form.Item>
 
-              <Form.Item
-                label="Description"
-                name="description"
-                rules={[
-                  { required: true, message: "Vui lòng nhập Description" },
-                ]}
-              >
-                <AntInput.TextArea
-                  rows={6}
-                  placeholder="Nhập mô tả loại sản phẩm"
-                />
-              </Form.Item>
+                <Form.Item
+                  label="Description"
+                  name="description"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập Description" },
+                  ]}
+                >
+                  <AntInput.TextArea
+                    rows={6}
+                    placeholder="Nhập mô tả loại sản phẩm"
+                  />
+                </Form.Item>
 
-              <Form.Item
-                label="Meta Description"
-                name="metaDescription"
-                rules={[
-                  { required: true, message: "Vui lòng nhập Meta Description" },
-                ]}
-              >
-                <AntInput.TextArea
-                  rows={6}
-                  placeholder="Nhập meta description"
-                />
-              </Form.Item>
+                <Form.Item
+                  label="Meta Description"
+                  name="metaDescription"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập Meta Description",
+                    },
+                  ]}
+                >
+                  <AntInput.TextArea
+                    rows={6}
+                    placeholder="Nhập meta description"
+                  />
+                </Form.Item>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-            <Button
-              size="sm"
-              variant="outline"
-              type="button"
-              onClick={onClose}
-              disabled={isLoading || isLoadingUpdate}
-            >
-              {isLoading || isLoadingUpdate ? <LoadingOutlined /> : "Close"}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => form.submit()}
-              disabled={isLoading || isLoadingUpdate}
-            >
-              {isLoading || isLoadingUpdate ? (
-                <LoadingOutlined />
-              ) : (
-                "Save Changes"
-              )}
-            </Button>
-          </div>
-        </Form>
-      </div>
+            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+              <Button
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={onClose}
+                disabled={isLoadingCreate || isLoadingUpdate}
+              >
+                {isLoadingCreate || isLoadingUpdate ? (
+                  <LoadingOutlined />
+                ) : (
+                  "Close"
+                )}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => form.submit()}
+                disabled={isLoadingCreate || isLoadingUpdate}
+              >
+                {isLoadingCreate || isLoadingUpdate ? (
+                  <LoadingOutlined />
+                ) : (
+                  "Save Changes"
+                )}
+              </Button>
+            </div>
+          </Form>
+        </div>
+      )}
     </Modal>
   );
 }

@@ -13,6 +13,7 @@ import { usePaginationQuery } from "~/hooks/usePaginationQuery";
 import { PlusIcon } from "~/icons";
 import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
+import ProductComboCreateModal from "./ProductComboCreateModal";
 import ProductCreateModal from "./ProductCreateModal";
 import ProductDetailModal from "./ProductDetail";
 
@@ -36,6 +37,11 @@ function ProductsManagement() {
     isOpen: isOpenCreate,
     openModal: openModalCreate,
     closeModal: closeModalCreate,
+  } = useModal();
+  const {
+    isOpen: isOpenCreateCombo,
+    openModal: openModalCreateCombo,
+    closeModal: closeModalCreateCombo,
   } = useModal();
 
   // #region  hook api
@@ -106,6 +112,14 @@ function ProductsManagement() {
                       startIcon={<PlusIcon />}
                     >
                       Create an Product
+                    </Button>
+                    <Button
+                      onClick={openModalCreateCombo}
+                      size="sm"
+                      variant="outline"
+                      startIcon={<PlusIcon />}
+                    >
+                      Create an Combo
                     </Button>
                   </div>
                 </div>
@@ -188,6 +202,11 @@ function ProductsManagement() {
       <ProductCreateModal
         onClose={closeModalCreate}
         isOpen={isOpenCreate}
+        title="Create Product"
+      />
+      <ProductComboCreateModal
+        onClose={closeModalCreateCombo}
+        isOpen={isOpenCreateCombo}
         title="Create Product"
       />
     </Fragment>

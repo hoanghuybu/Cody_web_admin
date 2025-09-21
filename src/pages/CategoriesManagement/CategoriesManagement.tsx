@@ -10,7 +10,7 @@ import { getColumnsCategories } from "~/constant/TableColumnsCategories";
 import { useDebounce } from "~/hooks/useDebounce";
 import { useModal } from "~/hooks/useModal";
 import { usePaginationQuery } from "~/hooks/usePaginationQuery";
-import { FilterIcon, PlusIcon } from "~/icons";
+import { PlusIcon } from "~/icons";
 import { endpoints } from "~/services/endpoints";
 import { DataType, OnChange, Sorts } from "~/type";
 import CategoriesCreateModal from "./CategoriesCreateModal";
@@ -140,10 +140,10 @@ function CategoriesManagement() {
                         </div>
                       </form>
                     </div>
-                    <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+                    {/* <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
                       <FilterIcon />
                       Filter
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </>

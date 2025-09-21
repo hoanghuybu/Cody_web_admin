@@ -15,10 +15,11 @@ import Button from "~/components/ui/button/Button";
 import { useSelectBoxCategory } from "~/hooks/categories/useSelectBoxCategory";
 
 import useCreateProduct from "~/hooks/products/useCreateProduct";
+import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
 import { useLockBodyScroll } from "~/hooks/useLockBodyScroll";
 import LoadingPage from "../LoadingPage";
 
-interface ProductCreateModalProps {
+interface ProductComboCreateModalProps {
   title: string;
   isOpen: boolean;
   isLoading?: boolean;
@@ -43,7 +44,7 @@ interface ProductCreateModalProps {
     | any;
 }
 
-function ProductCreateModal(props: ProductCreateModalProps) {
+function ProductComboCreateModal(props: ProductComboCreateModalProps) {
   const {
     title = "Create Product",
     isLoadingUpdate,
@@ -54,21 +55,19 @@ function ProductCreateModal(props: ProductCreateModalProps) {
     isEdit,
     handleUpdate,
   } = props;
+
   const [form] = Form.useForm();
 
-  // #region hook
   const { onCreateProduct, isLoading: isLoadingCreate } = useCreateProduct();
   const { data: lstCategories, isLoading: isLoadingCategory } =
     useSelectBoxCategory();
+  const { data: dataProducts, isLoading: isLoadingProduct } =
+    usePaginationProduct();
 
   useLockBodyScroll(isOpen);
-  // #endregion
 
-  // #region  variables
   const loading = isLoadingCategory || isLoading;
-  //#endregion
 
-  // #region function
   const categoryOptions = useMemo(
     () =>
       (lstCategories || []).map((c: any) => ({
@@ -76,6 +75,15 @@ function ProductCreateModal(props: ProductCreateModalProps) {
         label: c?.name,
       })),
     [lstCategories]
+  );
+
+  const productOptions = useMemo(
+    () =>
+      (dataProducts || []).map((p: any) => ({
+        value: p?.id,
+        label: p?.name || p?.title || `#${p?.id}`,
+      })),
+    [dataProducts]
   );
 
   // Nhận file từ FileInput và set vào Form (images: {file, preview}[])
@@ -102,7 +110,7 @@ function ProductCreateModal(props: ProductCreateModalProps) {
       slug: values?.slug ?? null,
       metaDescription: values?.metaDescription ?? null,
       price: values?.price != null ? Number(values?.price) : null,
-      includedIds: [] as string[] | null,
+      includedIds: values?.includedIds ?? null,
       originalPrice:
         values?.originalPrice != null ? Number(values?.originalPrice) : null,
       stockQuantity:
@@ -194,9 +202,7 @@ function ProductCreateModal(props: ProductCreateModalProps) {
       message.error("Có lỗi xảy ra khi tạo sản phẩm");
     }
   };
-  // #endregion
 
-  // #region Effect
   useEffect(() => {
     if (initialValue) {
       form.setFieldsValue(initialValue);
@@ -208,7 +214,6 @@ function ProductCreateModal(props: ProductCreateModalProps) {
       form.resetFields();
     }
   }, [isOpen, form]);
-  // #endregion
 
   return (
     <Modal
@@ -373,6 +378,26 @@ function ProductCreateModal(props: ProductCreateModalProps) {
                 </Form.Item>
 
                 <Form.Item
+                  label="Products"
+                  name="includedIds"
+                  rules={[
+                    {
+                      required: true,
+                      type: "array",
+                      message: "Vui lòng chọn ít nhất 1 Product",
+                    },
+                  ]}
+                >
+                  <Select
+                    mode="multiple"
+                    options={productOptions}
+                    placeholder="Chọn Products"
+                    loading={isLoadingProduct}
+                    allowClear
+                  />
+                </Form.Item>
+
+                <Form.Item
                   label="Description"
                   name="description"
                   rules={[
@@ -472,4 +497,4 @@ function ProductCreateModal(props: ProductCreateModalProps) {
   );
 }
 
-export default ProductCreateModal;
+export default ProductComboCreateModal;
