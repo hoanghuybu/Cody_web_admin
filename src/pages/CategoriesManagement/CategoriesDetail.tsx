@@ -26,7 +26,6 @@ function CategoriesDetailModal(props: ProductDetailDetailProps) {
     initData?.id
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: detailCate, isLoading: isLoadingDetail } =
     useLoadDetailCategory(shouldLoadDetail ? initData?.id : undefined);
 
@@ -59,6 +58,7 @@ function CategoriesDetailModal(props: ProductDetailDetailProps) {
   return (
     <CategoriesCreateModal
       isEdit={true}
+      isLoading={isLoadingDetail}
       isLoadingUpdate={isLoading}
       handleUpdate={handleSave}
       title="Update Category"

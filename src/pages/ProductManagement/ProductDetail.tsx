@@ -2,8 +2,8 @@ import { message } from "antd";
 import { useEffect, useState } from "react";
 import { useLoadDetailProduct } from "~/hooks/products/useLoadDetailProduct";
 import { useUpdateProduct } from "~/hooks/products/useUpdateProduct";
-import LoadingPage from "../LoadingPage";
-import OrderCreateModal from "./ProductCreateModal";
+import ProductComboCreateModal from "./ProductComboCreateModal";
+import ProductCreateModal from "./ProductCreateModal";
 
 interface ProductDetailDetailProps {
   initData: any;
@@ -27,10 +27,10 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
     includedIds: null,
     images: null,
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data, onUpdateProduct, isLoading, isError } = useUpdateProduct(
-    initData?.id
-  );
+
+  const isCombo: boolean = (input?.includedIds?.length ?? 0) > 0;
+
+  const { onUpdateProduct, isLoading } = useUpdateProduct(initData?.id);
 
   const { data: detailProduct, isLoading: isLoadingDetail } =
     useLoadDetailProduct(shouldLoadDetail ? initData?.id : undefined);
@@ -69,11 +69,22 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
 
   return (
     <>
-      {isLoadingDetail ? (
-        <LoadingPage />
-      ) : (
-        <OrderCreateModal
+      {!isCombo && (
+        <ProductCreateModal
           isEdit={true}
+          isLoading={isLoadingDetail}
+          isLoadingUpdate={isLoading}
+          handleUpdate={handleSave}
+          title="Update Product"
+          initialValue={input}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      )}
+      {isCombo && (
+        <ProductComboCreateModal
+          isEdit={true}
+          isLoading={isLoadingDetail}
           isLoadingUpdate={isLoading}
           handleUpdate={handleSave}
           title="Update Product"
