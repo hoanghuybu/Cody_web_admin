@@ -776,3 +776,15 @@ span.flatpickr-weekday,
 .simplebar-scrollbar.simplebar-visible:before {
   @apply opacity-100;
 }
+
+.ant-modal-mask,
+.ant-modal-wrap {
+  z-index: 99999 !important;
+}
+.ant-modal-wrap {
+  overflow: hidden !important;
+}
+.ant-form-item {
+  margin-bottom: 10px;
+}
+
