@@ -221,7 +221,7 @@ function ProductCreateModal(props: ProductCreateModalProps) {
     >
       {loading && <LoadingPage />}
       {!loading && (
-        <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11 max-h-[800px]">
+        <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11 h-[80vh]">
           <div className="px-2 pr-14 text-center">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
               {title}
