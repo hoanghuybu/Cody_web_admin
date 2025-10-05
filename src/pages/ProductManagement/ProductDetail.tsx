@@ -25,6 +25,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
     stockQuantity: null,
     categoryIds: null,
     includedIds: null,
+    defaultImages: null,
     images: null,
   });
 
@@ -55,7 +56,8 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
         originalPrice: detailProduct?.price,
         stockQuantity: detailProduct?.stockQuantity,
         categoryIds: detailProduct?.categories?.map((c: any) => c?.id),
-        images: detailProduct?.images,
+        images: detailProduct?.images?.map((img: any) => img?.imageUrl),
+        defaultImages: detailProduct?.images ?? [],
         includedIds: detailProduct?.products?.map((c: any) => c?.id),
       });
     }
@@ -87,7 +89,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
           isLoading={isLoadingDetail}
           isLoadingUpdate={isLoading}
           handleUpdate={handleSave}
-          title="Update Product"
+          title="Update Product Combo"
           initialValue={input}
           isOpen={isOpen}
           onClose={onClose}
