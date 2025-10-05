@@ -15,6 +15,7 @@ import Button from "~/components/ui/button/Button";
 import { useSelectBoxCategory } from "~/hooks/categories/useSelectBoxCategory";
 
 import useCreateProduct from "~/hooks/products/useCreateProduct";
+import { useUploadImage } from "~/hooks/upload/useUploadImages";
 import { useLockBodyScroll } from "~/hooks/useLockBodyScroll";
 import LoadingPage from "../LoadingPage";
 
@@ -55,17 +56,19 @@ function ProductCreateModal(props: ProductCreateModalProps) {
     handleUpdate,
   } = props;
   const [form] = Form.useForm();
+  const images = Form.useWatch("images", form);
 
   // #region hook
   const { onCreateProduct, isLoading: isLoadingCreate } = useCreateProduct();
   const { data: lstCategories, isLoading: isLoadingCategory } =
     useSelectBoxCategory();
+  const { onUploadImage, isLoading: isLoadingUpload } = useUploadImage();
 
   useLockBodyScroll(isOpen);
   // #endregion
 
   // #region  variables
-  const loading = isLoadingCategory || isLoading;
+  const loading = isLoadingCategory || isLoading || isLoadingUpload;
   //#endregion
 
   // #region function
@@ -79,19 +82,26 @@ function ProductCreateModal(props: ProductCreateModalProps) {
   );
 
   // Nhận file từ FileInput và set vào Form (images: {file, preview}[])
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
-    const prevImages = (form.getFieldValue("images") as any[]) || [];
-    const newImages = Array.from(files).map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
+    const file = files[0];
+    try {
+      const res = await onUploadImage(file);
+      const imgUrl = res.data;
+      const prevImages = Array.isArray(form.getFieldValue("images"))
+        ? form.getFieldValue("images")
+        : [];
 
-    form.setFieldsValue({
-      images: [...prevImages, ...newImages],
-    });
+      form.setFieldsValue({
+        images: [...prevImages, imgUrl],
+      });
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
   };
 
   // Submit form
@@ -118,14 +128,11 @@ function ProductCreateModal(props: ProductCreateModalProps) {
         ...payload,
         images:
           payload.images && payload.images.length > 0
-            ? payload.images
-            : [
-                {
-                  imageUrl:
-                    "https://res.cloudinary.com/dlvvc6zev/image/upload/private-tours/2022/12/keo-dua.jpg",
-                  isMain: true,
-                },
-              ],
+            ? payload.images.map((img: string, index: number) => ({
+                imageUrl: img,
+                isMain: index === 0,
+              }))
+            : [],
       };
       if (isEdit) {
         let newLstCategory: {
@@ -136,11 +143,17 @@ function ProductCreateModal(props: ProductCreateModalProps) {
           productIncludedId: string;
           action: "KEEP" | "ADD" | "REMOVE";
         }[] = [];
+        let newLstImage: {
+          imageId?: string;
+          imageUrl?: string;
+          action: "KEEP" | "ADD" | "REMOVE";
+        }[] = [];
         const oldCategoryIds: string[] = initialValue?.categoryIds || [];
         const newCategoryIds: string[] = values?.categoryIds || [];
         const oldProductIds: string[] = initialValue?.includedIds || [];
         const newProductIds: string[] = values?.includedIds || [];
-
+        const oldLstImage: any[] = initialValue?.defaultImages || [];
+        const modifyLstImage: any[] = body?.images ?? [];
         // KEEP hoặc ADD
         newLstCategory = newCategoryIds.map((id) => {
           if (oldCategoryIds.includes(id)) {
@@ -154,6 +167,19 @@ function ProductCreateModal(props: ProductCreateModalProps) {
           }
           return { productIncludedId: id, action: "ADD" };
         });
+
+        newLstImage = modifyLstImage
+          .map((img: any) => {
+            const isExist = oldLstImage.find(
+              (item) => item.imageUrl === img.imageUrl
+            );
+            if (!isExist) {
+              // ADD
+              return { imageUrl: img.imageUrl, action: "ADD" };
+            }
+            return null;
+          })
+          .filter(Boolean) as any[];
 
         // REMOVE
         const removedCategories = oldCategoryIds.filter(
@@ -173,12 +199,22 @@ function ProductCreateModal(props: ProductCreateModalProps) {
           newLstProduct.push({ productIncludedId: id, action: "REMOVE" });
         });
 
+        oldLstImage.forEach((oldImg) => {
+          const stillExistsInNew = modifyLstImage.some(
+            (newImg: any) => (newImg.imageUrl ?? newImg.url) === oldImg.imageUrl
+          );
+          if (!stillExistsInNew) {
+            newLstImage.push({ imageId: oldImg.id, action: "REMOVE" });
+          }
+        });
+
         newLstProduct = newLstProduct.filter((cate) => cate.action !== "KEEP");
 
         handleUpdate({
           ...body,
           category: [...newLstCategory],
           includedProduct: [...newLstProduct],
+          image: newLstImage,
         });
       } else {
         const result = await onCreateProduct(body);
@@ -204,7 +240,7 @@ function ProductCreateModal(props: ProductCreateModalProps) {
   }, [initialValue, form]);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen == false) {
       form.resetFields();
     }
   }, [isOpen, form]);
@@ -234,20 +270,23 @@ function ProductCreateModal(props: ProductCreateModalProps) {
           <Form
             form={form}
             layout="vertical"
-            initialValues={{
-              name: null,
-              description: null,
-              slug: null,
-              metaDescription: null,
-              price: null,
-              includedIds: null,
-              originalPrice: null,
-              stockQuantity: null,
-              categoryIds: null,
-              images: null,
-              isHidden: true,
-              ...initialValue,
-            }}
+            initialValues={
+              !initialValue
+                ? {
+                    name: null,
+                    description: null,
+                    slug: null,
+                    metaDescription: null,
+                    price: null,
+                    includedIds: null,
+                    originalPrice: null,
+                    stockQuantity: null,
+                    categoryIds: null,
+                    images: null,
+                    isHidden: true,
+                  }
+                : { ...initialValue }
+            }
             onFinish={onFinish}
             onFinishFailed={(err) =>
               console.log("Form validation failed:", err)
@@ -414,25 +453,38 @@ function ProductCreateModal(props: ProductCreateModalProps) {
                       className="custom-class"
                     />
                     {/* Hiển thị preview nếu có */}
-                    {Array.isArray(form.getFieldValue("images")) &&
-                      form.getFieldValue("images")?.length > 0 && (
-                        <div className="flex gap-2 mt-2">
-                          {form
-                            .getFieldValue("images")
-                            .map((img: any, idx: number) => (
-                              <div
-                                key={idx}
-                                className="w-20 h-20 rounded overflow-hidden border border-gray-300"
+                    {Array.isArray(images) && images.length > 0 && (
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {form
+                          .getFieldValue("images")
+                          .map((img: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className="relative group w-20 h-20 rounded overflow-hidden border border-gray-300"
+                            >
+                              <img
+                                src={img}
+                                alt={`preview-${idx}`}
+                                className="object-cover w-full h-full"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updatedImages = images.filter(
+                                    (_: any, i: number) => i !== idx
+                                  );
+                                  form.setFieldsValue({
+                                    images: updatedImages,
+                                  });
+                                }}
+                                className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/70 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                               >
-                                <img
-                                  src={img.preview}
-                                  alt={`preview-${idx}`}
-                                  className="object-cover w-full h-full"
-                                />
-                              </div>
-                            ))}
-                        </div>
-                      )}
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </>
                 </Form.Item>
               </div>

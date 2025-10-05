@@ -21,4 +21,8 @@ export const endpoints = {
   orders_change_status: (id: string) => `/admin/orders/${id}/status`,
   orders_detail: (id: string) => `/orders/${id}`,
   // #endregion
+
+  // #region  upload
+  upload: "/cloudinary/upload",
+  //#endregion
 };

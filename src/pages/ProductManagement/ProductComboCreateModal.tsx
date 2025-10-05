@@ -16,6 +16,7 @@ import { useSelectBoxCategory } from "~/hooks/categories/useSelectBoxCategory";
 
 import useCreateProduct from "~/hooks/products/useCreateProduct";
 import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
+import { useUploadImage } from "~/hooks/upload/useUploadImages";
 import { useLockBodyScroll } from "~/hooks/useLockBodyScroll";
 import LoadingPage from "../LoadingPage";
 
@@ -46,7 +47,7 @@ interface ProductComboCreateModalProps {
 
 function ProductComboCreateModal(props: ProductComboCreateModalProps) {
   const {
-    title = "Create Product",
+    title = "Create Product Combo",
     isLoadingUpdate,
     isLoading,
     isOpen,
@@ -64,9 +65,11 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
   const { data: dataProducts, isLoading: isLoadingProduct } =
     usePaginationProduct();
 
+  const { onUploadImage, isLoading: isLoadingUpload } = useUploadImage();
+
   useLockBodyScroll(isOpen);
 
-  const loading = isLoadingCategory || isLoading;
+  const loading = isLoadingCategory || isLoading || isLoadingUpload;
 
   const categoryOptions = useMemo(
     () =>
@@ -87,19 +90,26 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
   );
 
   // Nhận file từ FileInput và set vào Form (images: {file, preview}[])
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
-    const prevImages = (form.getFieldValue("images") as any[]) || [];
-    const newImages = Array.from(files).map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
+    const file = files[0];
+    try {
+      const res = await onUploadImage(file);
+      const imgUrl = res.data;
+      const prevImages = Array.isArray(form.getFieldValue("images"))
+        ? form.getFieldValue("images")
+        : [];
 
-    form.setFieldsValue({
-      images: [...prevImages, ...newImages],
-    });
+      form.setFieldsValue({
+        images: [...prevImages, imgUrl],
+      });
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
   };
 
   // Submit form
@@ -116,7 +126,7 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
       stockQuantity:
         values?.stockQuantity != null ? Number(values?.stockQuantity) : null,
       categoryIds: values?.categoryIds ?? null,
-      images: values?.images ?? null,
+      images: values?.images ?? [],
       isHidden: values?.isHidden ?? false,
     };
 
@@ -126,7 +136,10 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
         ...payload,
         images:
           payload.images && payload.images.length > 0
-            ? payload.images
+            ? payload.images.map((img: string, index: number) => ({
+                imageUrl: img,
+                isMain: index === 0,
+              }))
             : [
                 {
                   imageUrl:
@@ -450,7 +463,7 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
                                 className="w-20 h-20 rounded overflow-hidden border border-gray-300"
                               >
                                 <img
-                                  src={img.preview}
+                                  src={img}
                                   alt={`preview-${idx}`}
                                   className="object-cover w-full h-full"
                                 />
