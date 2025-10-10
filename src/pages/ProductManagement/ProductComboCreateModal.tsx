@@ -13,7 +13,6 @@ import { useEffect, useMemo } from "react";
 import FileInput from "~/components/form/input/FileInput";
 import Button from "~/components/ui/button/Button";
 import { useSelectBoxCategory } from "~/hooks/categories/useSelectBoxCategory";
-
 import useCreateProduct from "~/hooks/products/useCreateProduct";
 import { usePaginationProduct } from "~/hooks/products/usePaginationProduct";
 import { useUploadImage } from "~/hooks/upload/useUploadImages";
@@ -136,17 +135,11 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
         ...payload,
         images:
           payload.images && payload.images.length > 0
-            ? payload.images.map((img: string, index: number) => ({
+            ? payload.images.map((img: string) => ({
                 imageUrl: img,
-                isMain: index === 0,
+                isMain: false,
               }))
-            : [
-                {
-                  imageUrl:
-                    "https://res.cloudinary.com/dlvvc6zev/image/upload/private-tours/2022/12/keo-dua.jpg",
-                  isMain: true,
-                },
-              ],
+            : [],
       };
       if (isEdit) {
         let newLstCategory: {
@@ -157,10 +150,17 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
           productIncludedId: string;
           action: "KEEP" | "ADD" | "REMOVE";
         }[] = [];
+        let newLstImage: {
+          imageId?: string;
+          imageUrl?: string;
+          action: "KEEP" | "ADD" | "REMOVE";
+        }[] = [];
         const oldCategoryIds: string[] = initialValue?.categoryIds || [];
         const newCategoryIds: string[] = values?.categoryIds || [];
         const oldProductIds: string[] = initialValue?.includedIds || [];
         const newProductIds: string[] = values?.includedIds || [];
+        const modifyLstImage: any[] = body?.images ?? [];
+        const oldLstImage: any[] = initialValue?.defaultImages || [];
 
         // KEEP hoặc ADD
         newLstCategory = newCategoryIds.map((id) => {
@@ -175,6 +175,19 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
           }
           return { productIncludedId: id, action: "ADD" };
         });
+
+        newLstImage = modifyLstImage
+          .map((img: any) => {
+            const isExist = oldLstImage.find(
+              (item) => item.imageUrl === img.imageUrl
+            );
+            if (!isExist) {
+              // ADD
+              return { imageUrl: img.imageUrl, action: "ADD" };
+            }
+            return null;
+          })
+          .filter(Boolean) as any[];
 
         // REMOVE
         const removedCategories = oldCategoryIds.filter(
@@ -192,6 +205,15 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
         );
         removedProducts.forEach((id) => {
           newLstProduct.push({ productIncludedId: id, action: "REMOVE" });
+        });
+
+        oldLstImage.forEach((oldImg) => {
+          const stillExistsInNew = modifyLstImage.some(
+            (newImg: any) => (newImg.imageUrl ?? newImg.url) === oldImg.imageUrl
+          );
+          if (!stillExistsInNew) {
+            newLstImage.push({ imageId: oldImg.id, action: "REMOVE" });
+          }
         });
 
         newLstProduct = newLstProduct.filter((cate) => cate.action !== "KEEP");

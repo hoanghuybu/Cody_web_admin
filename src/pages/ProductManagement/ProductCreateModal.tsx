@@ -13,7 +13,6 @@ import { useEffect, useMemo } from "react";
 import FileInput from "~/components/form/input/FileInput";
 import Button from "~/components/ui/button/Button";
 import { useSelectBoxCategory } from "~/hooks/categories/useSelectBoxCategory";
-
 import useCreateProduct from "~/hooks/products/useCreateProduct";
 import { useUploadImage } from "~/hooks/upload/useUploadImages";
 import { useLockBodyScroll } from "~/hooks/useLockBodyScroll";
@@ -128,9 +127,9 @@ function ProductCreateModal(props: ProductCreateModalProps) {
         ...payload,
         images:
           payload.images && payload.images.length > 0
-            ? payload.images.map((img: string, index: number) => ({
+            ? payload.images.map((img: string) => ({
                 imageUrl: img,
-                isMain: index === 0,
+                isMain: false,
               }))
             : [],
       };
