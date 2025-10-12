@@ -37,6 +37,7 @@ interface ProductCreateModalProps {
         originalPrice: number;
         stockQuantity: number;
         categoryIds: string[];
+        ingredientValues: string[];
         images: any[];
         isHidden: boolean;
       }>
@@ -117,6 +118,7 @@ function ProductCreateModal(props: ProductCreateModalProps) {
       stockQuantity:
         values?.stockQuantity != null ? Number(values?.stockQuantity) : null,
       categoryIds: values?.categoryIds ?? null,
+      ingredientValues: values?.ingredientValues ?? null,
       images: values?.images ?? null,
       isHidden: values?.isHidden ?? false,
     };
@@ -281,6 +283,7 @@ function ProductCreateModal(props: ProductCreateModalProps) {
                     originalPrice: null,
                     stockQuantity: null,
                     categoryIds: null,
+                    ingredientValues: null,
                     images: null,
                     isHidden: true,
                   }
@@ -393,6 +396,26 @@ function ProductCreateModal(props: ProductCreateModalProps) {
                 <Form.Item
                   label="Categories"
                   name="categoryIds"
+                  rules={[
+                    {
+                      required: true,
+                      type: "array",
+                      message: "Vui lòng chọn ít nhất 1 Category",
+                    },
+                  ]}
+                >
+                  <Select
+                    mode="multiple"
+                    options={categoryOptions}
+                    placeholder="Chọn Categories"
+                    loading={isLoadingCategory}
+                    allowClear
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Ingredients"
+                  name="ingredientValues"
                   rules={[
                     {
                       required: true,
