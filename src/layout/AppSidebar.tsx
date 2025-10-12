@@ -2,12 +2,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 
 // Assume these icons are imported from an icon library
+import { GoldOutlined } from "@ant-design/icons";
 import { useSidebar } from "../context/SidebarContext";
 import {
+  BoxCubeIcon,
+  // CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
+  // ListIcon,
   OrderIcon,
+  // PageIcon,
+  PieChartIcon,
+  PlugInIcon,
+  // TableIcon,
   UserCircleIcon,
 } from "../icons";
 
@@ -38,6 +46,11 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Product Management",
     path: "/products-management",
+  },
+  {
+    icon: <GoldOutlined />,
+    name: "Category Management",
+    path: "/categories-management",
   },
   // {
   //   icon: <GridIcon />,
@@ -75,34 +88,34 @@ const navItems: NavItem[] = [
 ];
 
 const othersItems: NavItem[] = [
-  // {
-  //   icon: <PieChartIcon />,
-  //   name: "Charts",
-  //   subItems: [
-  //     { name: "Line Chart", path: "/line-chart", pro: false },
-  //     { name: "Bar Chart", path: "/bar-chart", pro: false },
-  //   ],
-  // },
-  // {
-  //   icon: <BoxCubeIcon />,
-  //   name: "UI Elements",
-  //   subItems: [
-  //     { name: "Alerts", path: "/alerts", pro: false },
-  //     { name: "Avatar", path: "/avatars", pro: false },
-  //     { name: "Badge", path: "/badge", pro: false },
-  //     { name: "Buttons", path: "/buttons", pro: false },
-  //     { name: "Images", path: "/images", pro: false },
-  //     { name: "Videos", path: "/videos", pro: false },
-  //   ],
-  // },
-  // {
-  //   icon: <PlugInIcon />,
-  //   name: "Authentication",
-  //   subItems: [
-  //     { name: "Sign In", path: "/signin", pro: false },
-  //     { name: "Sign Up", path: "/signup", pro: false },
-  //   ],
-  // },
+  {
+    icon: <PieChartIcon />,
+    name: "Charts",
+    subItems: [
+      { name: "Line Chart", path: "/line-chart", pro: false },
+      { name: "Bar Chart", path: "/bar-chart", pro: false },
+    ],
+  },
+  {
+    icon: <BoxCubeIcon />,
+    name: "UI Elements",
+    subItems: [
+      { name: "Alerts", path: "/alerts", pro: false },
+      { name: "Avatar", path: "/avatars", pro: false },
+      { name: "Badge", path: "/badge", pro: false },
+      { name: "Buttons", path: "/buttons", pro: false },
+      { name: "Images", path: "/images", pro: false },
+      { name: "Videos", path: "/videos", pro: false },
+    ],
+  },
+  {
+    icon: <PlugInIcon />,
+    name: "Authentication",
+    subItems: [
+      { name: "Sign In", path: "/signin", pro: false },
+      { name: "Sign Up", path: "/signup", pro: false },
+    ],
+  },
 ];
 
 const AppSidebar: React.FC = () => {

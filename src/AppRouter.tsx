@@ -1,15 +1,18 @@
-import { Suspense, useEffect } from "react";
-import { Route, Routes } from "react-router";
+import Cookies from "js-cookie";
+import { Suspense, useLayoutEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import AppLayout from "./layout/AppLayout";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import Blank from "./pages/Blank";
 import Calendar from "./pages/Calendar";
+import CategoriesManagement from "./pages/CategoriesManagement/CategoriesManagement";
 import BarChart from "./pages/Charts/BarChart";
 import LineChart from "./pages/Charts/LineChart";
 import Home from "./pages/Dashboard/Home";
 import FormElements from "./pages/Forms/FormElements";
+import LoadingPage from "./pages/LoadingPage";
 import OrdersManagement from "./pages/OrderManagement/OrdersManagement";
 import NotFound from "./pages/OtherPage/NotFound";
 import ProductsManagement from "./pages/ProductManagement/ProductsManagement";
@@ -25,16 +28,24 @@ import Images from "./pages/UiElements/Images";
 import Videos from "./pages/UiElements/Videos";
 import UserProfiles from "./pages/UserProfiles";
 import UsersManagement from "./pages/UsersManagement";
-import { useAuthStore } from "./store/authStore";
 
 function AppRouter() {
-  const { authenticate } = useAuthStore();
-
-  useEffect(() => {
-    authenticate();
-  }, [authenticate]);
+  const userInfo = Cookies.get("accessToken");
+  const navigate = useNavigate();
+  useLayoutEffect(() => {
+    try {
+      if (!window.location.pathname.includes("signin")) {
+        const check = !userInfo ? true : false;
+        if (check) {
+          navigate("/signin");
+        }
+      }
+    } catch (error) {
+      console.error("Authentication failed", error);
+    }
+  }, [userInfo, navigate]);
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingPage />}>
       <ScrollToTop />
       <Routes>
         {/* Dashboard Layout */}
@@ -62,6 +73,11 @@ function AppRouter() {
             index
             path="/account-management"
             element={<AccountManagement />}
+          />
+          <Route
+            index
+            path="/categories-management"
+            element={<CategoriesManagement />}
           />
 
           <Route index path="/staffs/:id" element={<StaffProfile />} />

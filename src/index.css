@@ -161,6 +161,7 @@ layer(base);
   --z-index-99: 99;
   --z-index-999: 999;
   --z-index-9999: 9999;
+  --z-index-1000: 1000;
   --z-index-99999: 99999;
   --z-index-999999: 999999;
 }
@@ -776,3 +777,15 @@ span.flatpickr-weekday,
 .simplebar-scrollbar.simplebar-visible:before {
   @apply opacity-100;
 }
+
+.ant-modal-mask,
+.ant-modal-wrap {
+  /* z-index: 99999 !important; */
+}
+.ant-modal-wrap {
+  overflow: hidden !important;
+}
+.ant-form-item {
+  margin-bottom: 10px;
+}
+
