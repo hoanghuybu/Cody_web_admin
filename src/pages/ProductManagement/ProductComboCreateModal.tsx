@@ -127,6 +127,7 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
       categoryIds: values?.categoryIds ?? null,
       images: values?.images ?? [],
       isHidden: values?.isHidden ?? false,
+      type: "COMBO",
     };
 
     try {

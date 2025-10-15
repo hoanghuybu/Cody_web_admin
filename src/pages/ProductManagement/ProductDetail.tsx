@@ -27,6 +27,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
     includedIds: null,
     defaultImages: null,
     images: null,
+    type: null,
   });
 
   const isCombo: boolean = (input?.includedIds?.length ?? 0) > 0;
@@ -59,6 +60,7 @@ function ProductDetailModal(props: ProductDetailDetailProps) {
         images: detailProduct?.images?.map((img: any) => img?.imageUrl),
         defaultImages: detailProduct?.images ?? [],
         includedIds: detailProduct?.products?.map((c: any) => c?.id),
+        type: detailProduct?.type,
       });
     }
   }, [detailProduct]);

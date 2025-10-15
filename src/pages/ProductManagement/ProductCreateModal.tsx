@@ -1,5 +1,6 @@
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
+  Button as AButton,
   Input as AntInput,
   Col,
   Form,
@@ -9,14 +10,16 @@ import {
   Select,
   message,
 } from "antd";
-import { useEffect, useMemo } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import FileInput from "~/components/form/input/FileInput";
 import Button from "~/components/ui/button/Button";
 import { useSelectBoxCategory } from "~/hooks/categories/useSelectBoxCategory";
 import useCreateProduct from "~/hooks/products/useCreateProduct";
+import { useSelectBoxIngredients } from "~/hooks/products/useSelectBoxIngredients";
 import { useUploadImage } from "~/hooks/upload/useUploadImages";
 import { useLockBodyScroll } from "~/hooks/useLockBodyScroll";
 import LoadingPage from "../LoadingPage";
+import CreateIngredientModal from "./components/CreateIngredientModal";
 
 interface ProductCreateModalProps {
   title: string;
@@ -57,11 +60,14 @@ function ProductCreateModal(props: ProductCreateModalProps) {
   } = props;
   const [form] = Form.useForm();
   const images = Form.useWatch("images", form);
+  const [isOpenCreateIngredient, setIsOpenCreateIngredient] = useState(false);
 
   // #region hook
   const { onCreateProduct, isLoading: isLoadingCreate } = useCreateProduct();
   const { data: lstCategories, isLoading: isLoadingCategory } =
     useSelectBoxCategory();
+  const { data: lstIngredients, isLoading: isLoadingIngredients } =
+    useSelectBoxIngredients();
   const { onUploadImage, isLoading: isLoadingUpload } = useUploadImage();
 
   useLockBodyScroll(isOpen);
@@ -79,6 +85,15 @@ function ProductCreateModal(props: ProductCreateModalProps) {
         label: c?.name,
       })),
     [lstCategories]
+  );
+
+  const ingredientOptions = useMemo(
+    () =>
+      (lstIngredients || []).map((c: any) => ({
+        value: c?.id,
+        label: c?.name,
+      })),
+    [lstIngredients]
   );
 
   // Nhận file từ FileInput và set vào Form (images: {file, preview}[])
@@ -121,6 +136,7 @@ function ProductCreateModal(props: ProductCreateModalProps) {
       ingredientValues: values?.ingredientValues ?? null,
       images: values?.images ?? null,
       isHidden: values?.isHidden ?? false,
+      type: "SINGLE",
     };
 
     try {
@@ -248,301 +264,326 @@ function ProductCreateModal(props: ProductCreateModalProps) {
   // #endregion
 
   return (
-    <Modal
-      footer={null}
-      open={isOpen}
-      onOk={() => null}
-      onCancel={onClose}
-      width={900}
-      destroyOnHidden={true}
-    >
-      {loading && <LoadingPage />}
-      {!loading && (
-        <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11 h-[80vh]">
-          <div className="px-2 pr-14 text-center">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              {title}
-            </h4>
-            {/* <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+    <Fragment>
+      <Modal
+        footer={null}
+        open={isOpen}
+        onOk={() => null}
+        onCancel={onClose}
+        width={900}
+        destroyOnHidden={true}
+      >
+        {loading && <LoadingPage />}
+        {!loading && (
+          <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11 h-[80vh]">
+            <div className="px-2 pr-14 text-center">
+              <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+                {title}
+              </h4>
+              {/* <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
               Update your details to keep your profile up-to-date.
             </p> */}
-          </div>
+            </div>
 
-          <Form
-            form={form}
-            layout="vertical"
-            initialValues={
-              !initialValue
-                ? {
-                    name: null,
-                    description: null,
-                    slug: null,
-                    metaDescription: null,
-                    price: null,
-                    includedIds: null,
-                    originalPrice: null,
-                    stockQuantity: null,
-                    categoryIds: null,
-                    ingredientValues: null,
-                    images: null,
-                    isHidden: true,
-                  }
-                : { ...initialValue }
-            }
-            onFinish={onFinish}
-            onFinishFailed={(err) =>
-              console.log("Form validation failed:", err)
-            }
-          >
-            <div className="px-2 overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-1 gap-x-6 gap-y-0">
-                <Form.Item
-                  label="Name"
-                  name="name"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập tên sản phẩm" },
-                  ]}
-                >
-                  <AntInput placeholder="Nhập tên sản phẩm" />
-                </Form.Item>
+            <Form
+              form={form}
+              layout="vertical"
+              initialValues={
+                !initialValue
+                  ? {
+                      name: null,
+                      description: null,
+                      slug: null,
+                      metaDescription: null,
+                      price: null,
+                      includedIds: null,
+                      originalPrice: null,
+                      stockQuantity: null,
+                      categoryIds: null,
+                      ingredientValues: null,
+                      images: null,
+                      isHidden: true,
+                    }
+                  : { ...initialValue }
+              }
+              onFinish={onFinish}
+              onFinishFailed={(err) =>
+                console.log("Form validation failed:", err)
+              }
+            >
+              <div className="px-2 overflow-y-auto custom-scrollbar">
+                <div className="grid grid-cols-1 gap-x-6 gap-y-0">
+                  <Form.Item
+                    label="Name"
+                    name="name"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập tên sản phẩm" },
+                    ]}
+                  >
+                    <AntInput placeholder="Nhập tên sản phẩm" />
+                  </Form.Item>
 
-                <Form.Item
-                  label="Slug"
-                  name="slug"
-                  rules={[{ required: true, message: "Vui lòng nhập slug" }]}
-                  validateTrigger={["onBlur", "onSubmit"]}
-                >
-                  <AntInput placeholder="vd: keo-dua-ben-tre" />
-                </Form.Item>
+                  <Form.Item
+                    label="Slug"
+                    name="slug"
+                    rules={[{ required: true, message: "Vui lòng nhập slug" }]}
+                    validateTrigger={["onBlur", "onSubmit"]}
+                  >
+                    <AntInput placeholder="vd: keo-dua-ben-tre" />
+                  </Form.Item>
 
-                <Row gutter={[10, 10]}>
-                  <Col span={8}>
-                    <Form.Item
-                      label="Price"
-                      name="price"
-                      rules={[
-                        { required: true, message: "Vui lòng nhập Price" },
-                        {
-                          validator: (_, value) => {
-                            const n = Number(value);
-                            return n >= 0
-                              ? Promise.resolve()
-                              : Promise.reject("Price phải ≥ 0");
+                  <Row gutter={[10, 10]}>
+                    <Col span={8}>
+                      <Form.Item
+                        label="Price"
+                        name="price"
+                        rules={[
+                          { required: true, message: "Vui lòng nhập Price" },
+                          {
+                            validator: (_, value) => {
+                              const n = Number(value);
+                              return n >= 0
+                                ? Promise.resolve()
+                                : Promise.reject("Price phải ≥ 0");
+                            },
                           },
-                        },
-                      ]}
-                    >
-                      <InputNumber
-                        addonBefore={"VNĐ"}
-                        addonAfter={"đ"}
-                        style={{ width: "100%" }}
-                        placeholder="0"
-                      />
-                    </Form.Item>
-                  </Col>
+                        ]}
+                      >
+                        <InputNumber
+                          addonBefore={"VNĐ"}
+                          addonAfter={"đ"}
+                          style={{ width: "100%" }}
+                          placeholder="0"
+                        />
+                      </Form.Item>
+                    </Col>
 
-                  <Col span={8}>
-                    <Form.Item
-                      label="Original Price"
-                      name="originalPrice"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng nhập Original Price",
-                        },
-                        {
-                          validator: (_, value) => {
-                            const n = Number(value);
-                            return n >= 0
-                              ? Promise.resolve()
-                              : Promise.reject("Original Price phải ≥ 0");
+                    <Col span={8}>
+                      <Form.Item
+                        label="Original Price"
+                        name="originalPrice"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập Original Price",
                           },
-                        },
-                      ]}
-                    >
-                      <InputNumber
-                        addonBefore={"VNĐ"}
-                        addonAfter={"đ"}
-                        style={{ width: "100%" }}
-                        placeholder="0"
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col span={8}>
-                    <Form.Item
-                      label="Stock Quantity"
-                      name="stockQuantity"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng nhập Stock Quantity",
-                        },
-                        {
-                          validator: (_, value) => {
-                            const n = Number(value);
-                            return n >= 0
-                              ? Promise.resolve()
-                              : Promise.reject("Stock Quantity phải ≥ 0");
+                          {
+                            validator: (_, value) => {
+                              const n = Number(value);
+                              return n >= 0
+                                ? Promise.resolve()
+                                : Promise.reject("Original Price phải ≥ 0");
+                            },
                           },
-                        },
-                      ]}
-                    >
-                      <InputNumber style={{ width: "100%" }} placeholder="0" />
-                    </Form.Item>
-                  </Col>
-                </Row>
+                        ]}
+                      >
+                        <InputNumber
+                          addonBefore={"VNĐ"}
+                          addonAfter={"đ"}
+                          style={{ width: "100%" }}
+                          placeholder="0"
+                        />
+                      </Form.Item>
+                    </Col>
 
-                <Form.Item
-                  label="Categories"
-                  name="categoryIds"
-                  rules={[
-                    {
-                      required: true,
-                      type: "array",
-                      message: "Vui lòng chọn ít nhất 1 Category",
-                    },
-                  ]}
-                >
-                  <Select
-                    mode="multiple"
-                    options={categoryOptions}
-                    placeholder="Chọn Categories"
-                    loading={isLoadingCategory}
-                    allowClear
-                  />
-                </Form.Item>
+                    <Col span={8}>
+                      <Form.Item
+                        label="Stock Quantity"
+                        name="stockQuantity"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập Stock Quantity",
+                          },
+                          {
+                            validator: (_, value) => {
+                              const n = Number(value);
+                              return n >= 0
+                                ? Promise.resolve()
+                                : Promise.reject("Stock Quantity phải ≥ 0");
+                            },
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          style={{ width: "100%" }}
+                          placeholder="0"
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
 
-                <Form.Item
-                  label="Ingredients"
-                  name="ingredientValues"
-                  rules={[
-                    {
-                      required: true,
-                      type: "array",
-                      message: "Vui lòng chọn ít nhất 1 Category",
-                    },
-                  ]}
-                >
-                  <Select
-                    mode="multiple"
-                    options={categoryOptions}
-                    placeholder="Chọn Categories"
-                    loading={isLoadingCategory}
-                    allowClear
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label="Description"
-                  name="description"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập Description" },
-                  ]}
-                >
-                  <AntInput.TextArea
-                    rows={6}
-                    placeholder="Nhập mô tả sản phẩm"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label="Meta Description"
-                  name="metaDescription"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập Meta Description",
-                    },
-                  ]}
-                >
-                  <AntInput.TextArea
-                    rows={6}
-                    placeholder="Nhập meta description"
-                  />
-                </Form.Item>
-
-                {/* Images: không bắt buộc */}
-                <Form.Item
-                  label="Image"
-                  name="images"
-                  valuePropName="images"
-                  trigger="onChange"
-                >
-                  <>
-                    <FileInput
-                      onChange={handleFileChange}
-                      className="custom-class"
+                  <Form.Item
+                    label="Categories"
+                    name="categoryIds"
+                    rules={[
+                      {
+                        required: true,
+                        type: "array",
+                        message: "Vui lòng chọn ít nhất 1 Category",
+                      },
+                    ]}
+                  >
+                    <Select
+                      mode="multiple"
+                      options={categoryOptions}
+                      placeholder="Chọn Categories"
+                      loading={isLoadingCategory}
+                      allowClear
                     />
-                    {/* Hiển thị preview nếu có */}
-                    {Array.isArray(images) && images.length > 0 && (
-                      <div className="flex gap-2 mt-2 flex-wrap">
-                        {form
-                          .getFieldValue("images")
-                          .map((img: any, idx: number) => (
-                            <div
-                              key={idx}
-                              className="relative group w-20 h-20 rounded overflow-hidden border border-gray-300"
-                            >
-                              <img
-                                src={img}
-                                alt={`preview-${idx}`}
-                                className="object-cover w-full h-full"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const updatedImages = images.filter(
-                                    (_: any, i: number) => i !== idx
-                                  );
-                                  form.setFieldsValue({
-                                    images: updatedImages,
-                                  });
-                                }}
-                                className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/70 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))}
-                      </div>
-                    )}
-                  </>
-                </Form.Item>
-              </div>
-            </div>
+                  </Form.Item>
 
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                type="button"
-                onClick={onClose}
-                disabled={isLoadingCreate || isLoadingUpdate}
-              >
-                {isLoadingCreate || isLoadingUpdate ? (
-                  <LoadingOutlined />
-                ) : (
-                  "Close"
-                )}
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => form.submit()}
-                disabled={isLoadingCreate || isLoadingUpdate}
-              >
-                {isLoadingCreate || isLoadingUpdate ? (
-                  <LoadingOutlined />
-                ) : (
-                  "Save Changes"
-                )}
-              </Button>
-            </div>
-          </Form>
-        </div>
-      )}
-    </Modal>
+                  <Form.Item
+                    label="Ingredients"
+                    name="ingredientIds"
+                    rules={[
+                      {
+                        required: true,
+                        type: "array",
+                        message: "Vui lòng chọn ít nhất 1 Ingredients",
+                      },
+                    ]}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Select
+                        mode="multiple"
+                        options={ingredientOptions}
+                        placeholder="Chọn Ingredients"
+                        loading={isLoadingIngredients}
+                        allowClear
+                        style={{ flex: 1 }}
+                      />
+                      <AButton
+                        icon={<PlusOutlined />}
+                        onClick={() => setIsOpenCreateIngredient(true)}
+                        type="default"
+                      >
+                        Tạo mới
+                      </AButton>
+                    </div>
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Description"
+                    name="description"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập Description" },
+                    ]}
+                  >
+                    <AntInput.TextArea
+                      rows={6}
+                      placeholder="Nhập mô tả sản phẩm"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Meta Description"
+                    name="metaDescription"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập Meta Description",
+                      },
+                    ]}
+                  >
+                    <AntInput.TextArea
+                      rows={6}
+                      placeholder="Nhập meta description"
+                    />
+                  </Form.Item>
+
+                  {/* Images: không bắt buộc */}
+                  <Form.Item
+                    label="Image"
+                    name="images"
+                    valuePropName="images"
+                    trigger="onChange"
+                  >
+                    <>
+                      <FileInput
+                        onChange={handleFileChange}
+                        className="custom-class"
+                      />
+                      {/* Hiển thị preview nếu có */}
+                      {Array.isArray(images) && images.length > 0 && (
+                        <div className="flex gap-2 mt-2 flex-wrap">
+                          {form
+                            .getFieldValue("images")
+                            .map((img: any, idx: number) => (
+                              <div
+                                key={idx}
+                                className="relative group w-20 h-20 rounded overflow-hidden border border-gray-300"
+                              >
+                                <img
+                                  src={img}
+                                  alt={`preview-${idx}`}
+                                  className="object-cover w-full h-full"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updatedImages = images.filter(
+                                      (_: any, i: number) => i !== idx
+                                    );
+                                    form.setFieldsValue({
+                                      images: updatedImages,
+                                    });
+                                  }}
+                                  className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/70 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </>
+                  </Form.Item>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  type="button"
+                  onClick={onClose}
+                  disabled={isLoadingCreate || isLoadingUpdate}
+                >
+                  {isLoadingCreate || isLoadingUpdate ? (
+                    <LoadingOutlined />
+                  ) : (
+                    "Close"
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => form.submit()}
+                  disabled={isLoadingCreate || isLoadingUpdate}
+                >
+                  {isLoadingCreate || isLoadingUpdate ? (
+                    <LoadingOutlined />
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
+              </div>
+            </Form>
+          </div>
+        )}
+      </Modal>
+      <CreateIngredientModal
+        open={isOpenCreateIngredient}
+        onClose={() => setIsOpenCreateIngredient(false)}
+        onCreated={(newItem) => {
+          // giả định newItem có id và name
+          if (typeof (useSelectBoxIngredients as any) === "object") {
+            /* noop - không dùng như vậy; ta sẽ dùng refetch từ hook phía trên */
+          }
+        }}
+      />
+    </Fragment>
   );
 }
 
