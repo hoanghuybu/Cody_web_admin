@@ -1,18 +1,14 @@
-import {
-  EditOutlined,
-  MoreOutlined,
-  UserAddOutlined,
-  UserDeleteOutlined,
-} from "@ant-design/icons";
-import { Button as AButton, Dropdown, Tag } from "antd";
-import { Staff } from "~/type";
+import { EditOutlined, MoreOutlined } from "@ant-design/icons";
+import { Button as AButton, Dropdown, TableColumnsType, Tag } from "antd";
+import { DataAccountType, Staff } from "~/type";
 
 interface ColumnParams {
   onEdit: (staff: Staff) => void;
-  onToggleStatus: (staff: Staff, action: "activate" | "deactivate") => void;
 }
 
-export const getColumnsStaff = ({ onEdit, onToggleStatus }: ColumnParams) => {
+export const getColumnsStaff = ({
+  onEdit,
+}: ColumnParams): TableColumnsType<DataAccountType> => {
   const getRoleColor = (role: string) => {
     switch (role) {
       case "Admin":
@@ -26,28 +22,22 @@ export const getColumnsStaff = ({ onEdit, onToggleStatus }: ColumnParams) => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    return status === "Active" ? "green" : "default";
-  };
-
   return [
     {
       title: "Name",
-      dataIndex: "fullName",
-      key: "fullName",
-      sorter: (a: Staff, b: Staff) => a.fullName.localeCompare(b.fullName),
-      render: (text: string) => (
+      dataIndex: "name",
+      key: "name",
+      render: (name: string) => (
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center overflow-hidden">
             <img
-              src="https://i.pravatar.cc/150?img=32"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNVw438n9rP50bq0h4kF4VWgxiK2Y1yaY-94SoNtXYJ5zy65UxnlSIX9TlarIH3LwT8V0&usqp=CAU"
               alt="Avatar"
               className="w-full h-full object-cover"
             />
           </div>
           <div>
-            <div className="font-medium text-gray-900">{text}</div>
-            <div className="text-sm text-gray-500">DOB: 08/03/2002</div>
+            <div className="font-medium text-gray-900">{name}</div>
           </div>
         </div>
       ),
@@ -55,10 +45,9 @@ export const getColumnsStaff = ({ onEdit, onToggleStatus }: ColumnParams) => {
     {
       title: "Contact Info",
       key: "contact",
-      render: (record: Staff) => (
+      render: (record: DataAccountType) => (
         <div>
           <div className="text-gray-900">{record.email}</div>
-          <div className="text-sm text-gray-500">{record.phoneNumber}</div>
         </div>
       ),
     },
@@ -67,11 +56,10 @@ export const getColumnsStaff = ({ onEdit, onToggleStatus }: ColumnParams) => {
       dataIndex: "role",
       key: "role",
       filters: [
-        { text: "Admin", value: "Admin" },
-        { text: "Management Staff", value: "Management Staff" },
-        { text: "Sales Staff", value: "Sales Staff" },
+        { text: "Admin", value: "ADMIN" },
+        { text: "User", value: "USER" },
       ],
-      onFilter: (value: string, record: Staff) => record.role === value,
+
       render: (role: string) => (
         <Tag color={getRoleColor(role)} className="px-2 py-1 rounded-full">
           {role}
@@ -79,26 +67,9 @@ export const getColumnsStaff = ({ onEdit, onToggleStatus }: ColumnParams) => {
       ),
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      filters: [
-        { text: "Active", value: "Active" },
-        { text: "Inactive", value: "Inactive" },
-      ],
-      onFilter: (value: string, record: Staff) => record.status === value,
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)} className="px-2 py-1 rounded-full">
-          {status}
-        </Tag>
-      ),
-    },
-    {
       title: "Created Date",
       dataIndex: "createdAt",
       key: "createdAt",
-      sorter: (a: Staff, b: Staff) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
@@ -109,23 +80,8 @@ export const getColumnsStaff = ({ onEdit, onToggleStatus }: ColumnParams) => {
           {
             key: "edit",
             icon: <EditOutlined />,
-            label: "Edit Staff",
+            label: "View profile",
             onClick: () => onEdit(record),
-          },
-          {
-            key: "status",
-            icon:
-              record.status === "Active" ? (
-                <UserDeleteOutlined />
-              ) : (
-                <UserAddOutlined />
-              ),
-            label: record.status === "Active" ? "Deactivate" : "Activate",
-            onClick: () =>
-              onToggleStatus(
-                record,
-                record.status === "Active" ? "deactivate" : "activate"
-              ),
           },
         ];
 

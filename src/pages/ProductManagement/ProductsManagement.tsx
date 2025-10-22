@@ -199,15 +199,10 @@ function ProductsManagement() {
         isOpen={isOpenDetail}
         title="any"
       />
-      <ProductCreateModal
-        onClose={closeModalCreate}
-        isOpen={isOpenCreate}
-        title="Create Product"
-      />
+      <ProductCreateModal onClose={closeModalCreate} isOpen={isOpenCreate} />
       <ProductComboCreateModal
         onClose={closeModalCreateCombo}
         isOpen={isOpenCreateCombo}
-        title="Create Product"
       />
     </Fragment>
   );

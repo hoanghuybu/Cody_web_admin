@@ -1,17 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
+import { Input, Select, Table } from "antd";
 import {
-  FilterOutlined,
-  PlusOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import { Input, Select, Table, message } from "antd";
-import React, { useMemo, useState } from "react";
+  FilterValue,
+  SorterResult,
+  TablePaginationConfig,
+} from "antd/es/table/interface";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import Button from "~/components/ui/button/Button";
 import { getColumnsStaff } from "~/constant";
-import { Staff, StaffFormData } from "~/type";
-import AccountCreateModal from "./AccountCreateModal";
-import AccountEditModal from "./AccountEditModal";
-import ConfirmationModal from "./ConfirmationModal";
+import { useDebounce } from "~/hooks/useDebounce";
+import { usePaginationQuery } from "~/hooks/usePaginationQuery";
+import { endpoints } from "~/services/endpoints";
+import { DataAccountType, Staff } from "~/type";
 
 const { Option } = Select;
 
@@ -62,92 +63,68 @@ const mockStaffData: Staff[] = [
 const AccountManagement: React.FC = () => {
   const navigate = useNavigate();
   const [staffData, setStaffData] = useState<Staff[]>(mockStaffData);
+  const [pagination, setPagination] = useState({
+    current: 1, // AntD dùng 1-based
+    pageSize: 10,
+    sortBy: "createdAt",
+    sortDirection: "DESC",
+    categoryId: null,
+  });
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce<string>(searchTerm, 500);
   const [roleFilter, setRoleFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
 
   // Modal states
-  const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [confirmationModalVisible, setConfirmationModalVisible] =
-    useState(false);
+  const [filteredInfo, setFilteredInfo] = useState<
+    Record<string, FilterValue | null>
+  >({});
+  const [sortedInfo, setSortedInfo] = useState<
+    SorterResult<any> | SorterResult<any>[]
+  >({} as SorterResult<any>);
 
   // Selected staff for operations
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
-  const [pendingAction, setPendingAction] = useState<
-    "activate" | "deactivate" | null
-  >(null);
 
   // Filtered data based on search and filters
-  const filteredData = useMemo(() => {
-    return staffData.filter((staff) => {
-      const matchesSearch =
-        staff.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        staff.email.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesRole = !roleFilter || staff.role === roleFilter;
-      const matchesStatus = !statusFilter || staff.status === statusFilter;
+  const {
+    data: dataAccounts,
+    total,
+    isLoading,
+  } = usePaginationQuery<any>(endpoints.account_pagination, {
+    page: pagination.current - 1,
+    size: pagination.pageSize,
+    sortBy: pagination.sortBy,
+    sortDirection: pagination.sortDirection,
+    // role: pagination.categoryId,
+    keyword: debouncedSearch,
+  });
 
-      return matchesSearch && matchesRole && matchesStatus;
-    });
-  }, [staffData, searchTerm, roleFilter, statusFilter]);
-
-  // Handle create staff
-  const handleCreateStaff = (data: StaffFormData) => {
-    const newStaff: Staff = {
-      id: Date.now().toString(),
-      ...data,
-      status: "Active",
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-
-    setStaffData((prev) => [...prev, newStaff]);
-    setCreateModalVisible(false);
-  };
-
-  // Handle edit staff
-  const handleEditStaff = (id: string, data: Partial<Staff>) => {
-    setStaffData((prev) =>
-      prev.map((staff) => (staff.id === id ? { ...staff, ...data } : staff))
-    );
-    setEditModalVisible(false);
-    setSelectedStaff(null);
-  };
-
-  // Handle status change
-  const handleStatusChange = (
-    staff: Staff,
-    action: "activate" | "deactivate"
+  const handleChange = (
+    paginationConfig: TablePaginationConfig,
+    filters: Record<string, FilterValue | null>,
+    sorter: SorterResult<DataAccountType> | SorterResult<DataAccountType>[]
   ) => {
-    setSelectedStaff(staff);
-    setPendingAction(action);
-    setConfirmationModalVisible(true);
-  };
-
-  // Confirm status change
-  const confirmStatusChange = () => {
-    if (!selectedStaff || !pendingAction) return;
-
-    const newStatus = pendingAction === "activate" ? "Active" : "Inactive";
-    setStaffData((prev) =>
-      prev.map((staff) =>
-        staff.id === selectedStaff.id ? { ...staff, status: newStatus } : staff
-      )
-    );
-
-    message.success(`Staff member ${pendingAction}d successfully!`);
-    setConfirmationModalVisible(false);
-    setSelectedStaff(null);
-    setPendingAction(null);
+    setFilteredInfo(filters);
+    setSortedInfo(sorter);
+    const sortObj = Array.isArray(sorter) ? sorter[0] : sorter;
+    setPagination({
+      ...pagination,
+      current: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
+      sortBy: sortObj?.field?.toString() || "createdAt",
+      sortDirection: sortObj?.order === "ascend" ? "ASC" : "DESC",
+    });
   };
 
   // Table columns
   const columns = getColumnsStaff({
     onEdit: (staff) => {
-      setSelectedStaff(staff);
-      setEditModalVisible(true);
+      navigate(`/staffs/${staff.id}`);
     },
-    onToggleStatus: (staff, action) => handleStatusChange(staff, action),
   });
+
+  console.log(dataAccounts);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -165,19 +142,19 @@ const AccountManagement: React.FC = () => {
                   Manage employee accounts, roles, and permissions
                 </p>
               </div>
-              <Button
+              {/* <Button
                 onClick={() => setCreateModalVisible(true)}
                 className="h-10 bg-blue-500 hover:bg-blue-600 border-blue-500 hover:border-blue-600 shadow-sm"
               >
                 <PlusOutlined />
                 Create New Staff
-              </Button>
+              </Button> */}
             </div>
           </div>
 
           {/* Search and Filters */}
           <div className="p-6 border-b border-gray-200 bg-gray-50">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
                 <Input
                   prefix={<SearchOutlined className="text-gray-400 " />}
@@ -202,57 +179,38 @@ const AccountManagement: React.FC = () => {
                   <Option value="Sales Staff">Sales Staff</Option>
                 </Select>
               </div>
-              <div>
-                <Select
-                  placeholder="Filter by Status"
-                  value={statusFilter}
-                  onChange={setStatusFilter}
-                  allowClear
-                  size="large" // ✅ Đồng bộ chiều cao
-                  className="w-full"
-                  suffixIcon={<FilterOutlined />}
-                >
-                  <Option value="Active">Active</Option>
-                  <Option value="Inactive">Inactive</Option>
-                </Select>
-              </div>
             </div>
           </div>
         </div>
 
         {/* Staff Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <Table
+          <Table<DataAccountType>
             columns={columns}
-            dataSource={filteredData}
+            dataSource={dataAccounts}
             rowKey="id"
             pagination={{
-              pageSize: 10,
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: total,
               showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} staff members`,
               className: "px-6 py-4",
             }}
-            onRow={(record) => ({
-              onClick: () => {
-                navigate(`/staffs/${record.id}`);
-              },
-            })}
-            className="overflow-hidden"
+            loading={isLoading}
             rowClassName="hover:bg-gray-50 transition-colors duration-200"
+            onChange={handleChange}
           />
         </div>
       </div>
 
       {/* Modals */}
-      <AccountCreateModal
+      {/* <AccountCreateModal
         visible={createModalVisible}
         onClose={() => setCreateModalVisible(false)}
         onSubmit={handleCreateStaff}
-      />
+      /> */}
 
-      <AccountEditModal
+      {/* <AccountEditModal
         visible={editModalVisible}
         staff={selectedStaff}
         onClose={() => {
@@ -260,9 +218,9 @@ const AccountManagement: React.FC = () => {
           setSelectedStaff(null);
         }}
         onSubmit={handleEditStaff}
-      />
+      /> */}
 
-      <ConfirmationModal
+      {/* <ConfirmationModal
         visible={confirmationModalVisible}
         title={`${
           pendingAction === "activate" ? "Activate" : "Deactivate"
@@ -282,7 +240,7 @@ const AccountManagement: React.FC = () => {
         }}
         confirmText={pendingAction === "activate" ? "Activate" : "Deactivate"}
         type={pendingAction === "deactivate" ? "warning" : "danger"}
-      />
+      /> */}
     </div>
   );
 };

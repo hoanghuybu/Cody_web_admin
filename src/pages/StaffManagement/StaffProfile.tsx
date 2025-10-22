@@ -8,7 +8,6 @@ import {
   DollarOutlined,
   HeartOutlined,
   MailOutlined,
-  PhoneOutlined,
   RiseOutlined,
   ThunderboltOutlined,
   TruckOutlined,
@@ -19,8 +18,10 @@ import {
   Button,
   Card,
   Col,
+  DatePicker,
   Form,
   Input,
+  InputNumber,
   List,
   Modal,
   Progress,
@@ -57,7 +58,12 @@ const MedalSVG = () => (
 );
 
 import moment from "moment";
+import { useParams } from "react-router";
+import { useAccountDetail } from "~/hooks/kpi/useAccountDetail";
+import useCreateKpi, { CreateKPIBody } from "~/hooks/kpi/useCreateKpi";
+import { toastService } from "~/services";
 import { Staff, Task } from "~/type";
+import LoadingPage from "../LoadingPage";
 
 const { Title, Text } = Typography;
 
@@ -263,27 +269,25 @@ const getActivityColor = (type: string) => {
 };
 
 const StaffProfile: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const { data: staffDetail, isLoading: isLoadingDetail } =
+    useAccountDetail(id);
   // Use dummy data instead of context
-  const [staff] = useState<Staff[]>(dummyStaffData);
   const [tasks] = useState<Task[]>(dummyTasksData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
-  const currentStaff = staff.find((s) => s.id === "1");
-  const assignedTasks = tasks.filter((t) => t.assignedTo === "1");
+  // Hook
+  const { onCreateKpi, isLoading } = useCreateKpi();
 
-  const completedTasks = assignedTasks.filter((t) => t.status === "Completed");
-  const completionRate =
-    assignedTasks.length > 0
-      ? Math.round((completedTasks.length / assignedTasks.length) * 100)
-      : 0;
+  const assignedTasks = tasks.filter((t) => t.assignedTo === "1");
 
   // KPI Card configurations
   const kpiCards = [
     {
-      title: "Orders Processed",
-      value: mockKPIData.ordersProcessed,
-      target: 150,
+      title: "Total Kpi",
+      value: staffDetail?.completeKpiCount ?? 0,
+      target: staffDetail?.totalKpiCount ?? 0,
       icon: <CheckSquareOutlined style={{ fontSize: 24, color: "#1890ff" }} />,
       color: "#1890ff",
       trend: "+12%",
@@ -292,26 +296,26 @@ const StaffProfile: React.FC = () => {
       description: "This month",
     },
     {
-      title: "Revenue Generated",
-      value: mockKPIData.revenueGenerated,
-      target: 30000,
+      title: "Input Kpi",
+      value: staffDetail?.completeTotalKpiInput ?? 0,
+      target: staffDetail?.totalKpiInput ?? 0,
       icon: <DollarOutlined style={{ fontSize: 24, color: "#52c41a" }} />,
       color: "#52c41a",
       trend: "+18%",
       trendUp: true,
       prefix: "$",
-      description: "Monthly total",
+      description: "This month",
     },
     {
-      title: "Customer Satisfaction",
-      value: mockKPIData.customerSatisfaction,
-      target: 5,
+      title: "Sell Kpi",
+      value: staffDetail?.completeTotalKpiSell ?? 0,
+      target: staffDetail?.totalKpiSell ?? 0,
       icon: <HeartOutlined style={{ fontSize: 24, color: "#f5222d" }} />,
       color: "#f5222d",
       trend: "+0.4",
       trendUp: true,
-      suffix: "/5.0",
-      description: "Average rating",
+      suffix: `/${staffDetail?.totalKpiSell ?? 0}`,
+      description: "This month",
     },
     {
       title: "Response Time",
@@ -358,15 +362,40 @@ const StaffProfile: React.FC = () => {
     form.resetFields();
   };
 
-  const handleSubmit = (values: {
-    achievementName: string;
+  const handleSubmit = async (values: {
+    kpiName: string;
     description: string;
+    dueDate: Date;
+    inputTargetValue: number;
+    selledTargetValue: number;
   }) => {
-    console.log("Form Values:", values);
-    // Call API hoặc xử lý dữ liệu ở đây
-    setIsModalOpen(false);
-    form.resetFields();
+    const dueDate = new Date(values.dueDate);
+    dueDate.setHours(23, 59, 0, 0); // 23:59:00.000   // chuyển sang Date object
+    const body: CreateKPIBody = {
+      title: values.kpiName,
+      description: values.description,
+      dueDate: dueDate,
+      assignToId: id,
+      inputTargetValue: values.inputTargetValue,
+      inputCurrentProgress: 0,
+      selledTargetValue: values.selledTargetValue,
+      selledCurrentProgress: 0,
+    };
+
+    try {
+      await onCreateKpi(body);
+    } catch (error: any) {
+      toastService.error("Đã có lỗi khi tạo KPI", error);
+    } finally {
+      setIsModalOpen(false);
+      form.resetFields();
+    }
   };
+
+  if (isLoadingDetail) {
+    return <LoadingPage />;
+  }
+  console.log("detail", staffDetail);
   return (
     <div>
       {/* Profile Section */}
@@ -388,8 +417,8 @@ const StaffProfile: React.FC = () => {
                   <Avatar
                     size={96}
                     src={
-                      currentStaff.avatarUrl ||
-                      `https://images.pexels.com/photos/697509/pexels-photo-697509.jpeg?auto=compress&cs=tinysrgb&w=96&h=96&dpr=2`
+                      staffDetail.avatarUrl ||
+                      `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNVw438n9rP50bq0h4kF4VWgxiK2Y1yaY-94SoNtXYJ5zy65UxnlSIX9TlarIH3LwT8V0&usqp=CAU`
                     }
                     style={{
                       border: "4px solid white",
@@ -398,38 +427,39 @@ const StaffProfile: React.FC = () => {
                   />
                   <div style={{ position: "absolute", bottom: 0, right: 0 }}>
                     <Tag
-                      color={
-                        currentStaff.status === "Active" ? "success" : "warning"
-                      }
+                      // color={
+                      //   currentStaff.status === "Active" ? "success" : "warning"
+                      // }
+                      color="success"
                     >
-                      {currentStaff.status}
+                      {"Active"}
                     </Tag>
                   </div>
                 </div>
 
                 <div>
                   <Title level={2} style={{ margin: 0 }}>
-                    {currentStaff.fullName}
+                    {staffDetail.name}
                   </Title>
                   <Text style={{ fontSize: 16, color: "#666" }}>
-                    {currentStaff.role}
+                    {staffDetail.role}
                   </Text>
 
                   <div style={{ marginTop: 16 }}>
                     <Space size="large" wrap>
                       <Space>
                         <MailOutlined />
-                        <Text>{currentStaff.email}</Text>
+                        <Text>{staffDetail.email}</Text>
                       </Space>
-                      <Space>
+                      {/* <Space>
                         <PhoneOutlined />
                         <Text>{currentStaff.phone}</Text>
-                      </Space>
+                      </Space> */}
                       <Space>
                         <CalendarOutlined />
                         <Text>
                           Joined{" "}
-                          {moment(new Date(currentStaff.createdAt)).format(
+                          {moment(new Date(staffDetail.createdAt)).format(
                             "MMM yyyy"
                           )}
                         </Text>
@@ -441,13 +471,12 @@ const StaffProfile: React.FC = () => {
             </Col>
 
             <Col>
-              {/* REPLACED: Edit Profile -> Reward & Recognition */}
               <Button
                 type="primary"
                 icon={<TrophySVG />}
                 onClick={handleOpenModal}
               >
-                Reward &amp; Recognition
+                Assign KPI
               </Button>
             </Col>
           </Row>
@@ -624,7 +653,7 @@ const StaffProfile: React.FC = () => {
               <Col span={12}>
                 <Statistic
                   title="Total Tasks"
-                  value={assignedTasks.length}
+                  value={staffDetail.totalKpiCount}
                   prefix={<CheckCircleOutlined />}
                   valueStyle={{ fontSize: 18 }}
                 />
@@ -632,7 +661,7 @@ const StaffProfile: React.FC = () => {
               <Col span={12}>
                 <Statistic
                   title="Completed"
-                  value={completedTasks.length}
+                  value={staffDetail.completeKpiCount}
                   prefix={<TrophySVG />}
                   valueStyle={{ fontSize: 18 }}
                 />
@@ -640,7 +669,15 @@ const StaffProfile: React.FC = () => {
               <Col span={12}>
                 <Statistic
                   title="Completion Rate"
-                  value={completionRate}
+                  value={
+                    staffDetail.totalKpiCount
+                      ? Math.round(
+                          (staffDetail.completeKpiCount /
+                            staffDetail.totalKpiCount) *
+                            100
+                        )
+                      : 0
+                  }
                   suffix="%"
                   prefix={<RiseOutlined />}
                   valueStyle={{ fontSize: 18 }}
@@ -851,17 +888,18 @@ const StaffProfile: React.FC = () => {
       </Row>
 
       <Modal
-        title="Reward & Recognition Form"
+        title="Assign KPI Form"
         open={isModalOpen}
         onCancel={handleCancel}
         onOk={() => form.submit()}
         okText="Submit"
         cancelText="Cancel"
+        confirmLoading={isLoading}
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
-            label="Achievement Name"
-            name="achievementName"
+            label="KPI Name"
+            name="kpiName"
             rules={[
               { required: true, message: "Please enter the achievement name" },
             ]}
@@ -875,6 +913,47 @@ const StaffProfile: React.FC = () => {
             rules={[{ required: true, message: "Please enter a description" }]}
           >
             <Input.TextArea placeholder="Enter description" rows={4} />
+          </Form.Item>
+
+          <Form.Item
+            label="Due Date"
+            name="dueDate"
+            rules={[{ required: true, message: "Please select the due date" }]}
+          >
+            <DatePicker
+              style={{ width: "100%" }}
+              disabledDate={(current) =>
+                current && current < moment().startOf("day")
+              }
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Input Target Value"
+            name="inputTargetValue"
+            rules={[
+              { required: true, message: "Please enter the target value" },
+            ]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              placeholder="Enter target value"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Selled Target Value"
+            name="selledTargetValue"
+            rules={[
+              { required: true, message: "Please enter the current progress" },
+            ]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              placeholder="Enter current progress"
+            />
           </Form.Item>
         </Form>
       </Modal>
