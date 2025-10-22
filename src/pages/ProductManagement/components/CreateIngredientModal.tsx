@@ -1,5 +1,6 @@
-// components/ingredient/CreateIngredientModal.tsx
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Form, Input, message, Modal } from "antd";
+import useCreateIngredient from "~/hooks/products/useCreateIngredient";
 // import useCreateIngredient from "~/hooks/products/useCreateIngredient";
 
 interface CreateIngredientModalProps {
@@ -14,15 +15,13 @@ export default function CreateIngredientModal({
   onCreated,
 }: CreateIngredientModalProps) {
   const [form] = Form.useForm();
-  //   const { mutateAsync, isLoading } = useCreateIngredient();
+  const { onCreateIngredient, isLoading } = useCreateIngredient();
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
       // gọi API tạo
-      //   const res = await mutateAsync({ name: values.name });
-      const res = { data: {} };
-      message.success("Tạo nguyên liệu thành công");
+      const res = await onCreateIngredient({ name: values.name });
       form.resetFields();
       onClose();
       if (onCreated) onCreated(res?.data ?? res); // phụ thuộc response
@@ -42,7 +41,8 @@ export default function CreateIngredientModal({
         onClose();
       }}
       onOk={handleOk}
-      confirmLoading={isLoading}
+      confirmLoading={false}
+      // confirmLoading={isLoading}
       okText="Tạo"
       cancelText="Hủy"
       destroyOnClose
@@ -59,6 +59,3 @@ export default function CreateIngredientModal({
     </Modal>
   );
 }
-
-// Đổi dialog thành 1 trang
-// Ui theeo feedback

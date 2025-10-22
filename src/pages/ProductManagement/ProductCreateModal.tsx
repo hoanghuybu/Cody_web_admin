@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button as AButton,
@@ -18,11 +19,13 @@ import useCreateProduct from "~/hooks/products/useCreateProduct";
 import { useSelectBoxIngredients } from "~/hooks/products/useSelectBoxIngredients";
 import { useUploadImage } from "~/hooks/upload/useUploadImages";
 import { useLockBodyScroll } from "~/hooks/useLockBodyScroll";
+import { usePaginationQuery } from "~/hooks/usePaginationQuery";
+import { endpoints } from "~/services/endpoints";
 import LoadingPage from "../LoadingPage";
 import CreateIngredientModal from "./components/CreateIngredientModal";
 
 interface ProductCreateModalProps {
-  title: string;
+  title?: string;
   isOpen: boolean;
   isLoading?: boolean;
   isLoadingUpdate?: boolean;
@@ -66,8 +69,19 @@ function ProductCreateModal(props: ProductCreateModalProps) {
   const { onCreateProduct, isLoading: isLoadingCreate } = useCreateProduct();
   const { data: lstCategories, isLoading: isLoadingCategory } =
     useSelectBoxCategory();
-  const { data: lstIngredients, isLoading: isLoadingIngredients } =
-    useSelectBoxIngredients();
+  const {
+    data: lstIngredients,
+    total,
+    isLoading: isLoadingIngredients,
+  } = usePaginationQuery<any>(
+    endpoints.ingredients_pagination, // endpoint
+    {
+      page: 0, // backend 0-based
+      size: 100000000,
+      sortBy: "name",
+      sortDirection: "ASC",
+    }
+  );
   const { onUploadImage, isLoading: isLoadingUpload } = useUploadImage();
 
   useLockBodyScroll(isOpen);
@@ -132,11 +146,13 @@ function ProductCreateModal(props: ProductCreateModalProps) {
         values?.originalPrice != null ? Number(values?.originalPrice) : null,
       stockQuantity:
         values?.stockQuantity != null ? Number(values?.stockQuantity) : null,
-      categoryIds: values?.categoryIds ?? null,
-      ingredientValues: values?.ingredientValues ?? null,
+      categoryIds: values?.categoryIds ? [...values.categoryIds] : null,
+      ingredientValues:
+        values?.ingredientValues?.map((item: any) => ({
+          id: item,
+        })) ?? null,
       images: values?.images ?? null,
       isHidden: values?.isHidden ?? false,
-      type: "SINGLE",
     };
 
     try {
@@ -166,7 +182,9 @@ function ProductCreateModal(props: ProductCreateModalProps) {
           action: "KEEP" | "ADD" | "REMOVE";
         }[] = [];
         const oldCategoryIds: string[] = initialValue?.categoryIds || [];
-        const newCategoryIds: string[] = values?.categoryIds || [];
+        const newCategoryIds: string[] = values?.categoryIds
+          ? [...values.categoryIds]
+          : [];
         const oldProductIds: string[] = initialValue?.includedIds || [];
         const newProductIds: string[] = values?.includedIds || [];
         const oldLstImage: any[] = initialValue?.defaultImages || [];
@@ -280,9 +298,6 @@ function ProductCreateModal(props: ProductCreateModalProps) {
               <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
                 {title}
               </h4>
-              {/* <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
-            </p> */}
             </div>
 
             <Form
@@ -419,13 +434,11 @@ function ProductCreateModal(props: ProductCreateModalProps) {
                     rules={[
                       {
                         required: true,
-                        type: "array",
-                        message: "Vui lòng chọn ít nhất 1 Category",
+                        message: "Vui lòng chọn Category",
                       },
                     ]}
                   >
                     <Select
-                      mode="multiple"
                       options={categoryOptions}
                       placeholder="Chọn Categories"
                       loading={isLoadingCategory}
@@ -433,26 +446,29 @@ function ProductCreateModal(props: ProductCreateModalProps) {
                     />
                   </Form.Item>
 
-                  <Form.Item
-                    label="Ingredients"
-                    name="ingredientIds"
-                    rules={[
-                      {
-                        required: true,
-                        type: "array",
-                        message: "Vui lòng chọn ít nhất 1 Ingredients",
-                      },
-                    ]}
-                  >
+                  <Form.Item label="Ingredients">
                     <div className="flex items-center gap-2">
-                      <Select
-                        mode="multiple"
-                        options={ingredientOptions}
-                        placeholder="Chọn Ingredients"
-                        loading={isLoadingIngredients}
-                        allowClear
-                        style={{ flex: 1 }}
-                      />
+                      <Form.Item
+                        name="ingredientValues"
+                        noStyle
+                        rules={[
+                          {
+                            required: true,
+                            type: "array",
+                            message: "Vui lòng chọn ít nhất 1 Ingredients",
+                          },
+                        ]}
+                      >
+                        <Select
+                          mode="multiple"
+                          options={ingredientOptions}
+                          placeholder="Chọn Ingredients"
+                          loading={isLoadingIngredients}
+                          allowClear
+                          style={{ flex: 1, minWidth: 0 }}
+                        />
+                      </Form.Item>
+
                       <AButton
                         icon={<PlusOutlined />}
                         onClick={() => setIsOpenCreateIngredient(true)}

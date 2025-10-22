@@ -7,7 +7,19 @@ export const endpoints = {
   product_update: (id: string) => `/products/admin/update/${id}`,
   product_delete: (id: string) => `/products/admin/delete/${id}`,
   product_detail: (id: string) => `/products/id/${id}`,
+  ingredients_pagination: "/ingredients/get-all",
+  ingredients_create: "/ingredients/admin/create",
   /**endregion */
+
+  // #region  KPI
+  kpi_create: "/admin/kpis/create",
+  //#endregion
+
+  // #region  Account
+  account_pagination: "/accounts/search",
+  account_detail: (id: string) => `/accounts/${id}`,
+  //#endregion
+
   // #region Categories
   categories_pagination: "/categories/search",
   categories_create: "/categories/admin/create",

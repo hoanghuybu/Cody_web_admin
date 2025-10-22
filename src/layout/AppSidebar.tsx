@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "KPI Dashboard", path: "/", pro: false },
       { name: "Account Management", path: "/account-management", pro: false },
-      { name: "Task Assignment", path: "/tasks", pro: false },
+      // { name: "Task Assignment", path: "/tasks", pro: false },
     ],
   },
   {

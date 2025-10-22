@@ -20,7 +20,7 @@ import { useLockBodyScroll } from "~/hooks/useLockBodyScroll";
 import LoadingPage from "../LoadingPage";
 
 interface ProductComboCreateModalProps {
-  title: string;
+  title?: string;
   isOpen: boolean;
   isLoading?: boolean;
   isLoadingUpdate?: boolean;
@@ -124,10 +124,9 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
         values?.originalPrice != null ? Number(values?.originalPrice) : null,
       stockQuantity:
         values?.stockQuantity != null ? Number(values?.stockQuantity) : null,
-      categoryIds: values?.categoryIds ?? null,
+      categoryIds: values?.categoryIds ? [...values.categoryIds] : null,
       images: values?.images ?? [],
       isHidden: values?.isHidden ?? false,
-      type: "COMBO",
     };
 
     try {
@@ -157,7 +156,9 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
           action: "KEEP" | "ADD" | "REMOVE";
         }[] = [];
         const oldCategoryIds: string[] = initialValue?.categoryIds || [];
-        const newCategoryIds: string[] = values?.categoryIds || [];
+        const newCategoryIds: string[] = values?.categoryIds
+          ? [...values.categoryIds]
+          : [];
         const oldProductIds: string[] = initialValue?.includedIds || [];
         const newProductIds: string[] = values?.includedIds || [];
         const modifyLstImage: any[] = body?.images ?? [];
@@ -399,13 +400,11 @@ function ProductComboCreateModal(props: ProductComboCreateModalProps) {
                   rules={[
                     {
                       required: true,
-                      type: "array",
-                      message: "Vui lòng chọn ít nhất 1 Category",
+                      message: "Vui lòng chọn Category",
                     },
                   ]}
                 >
                   <Select
-                    mode="multiple"
                     options={categoryOptions}
                     placeholder="Chọn Categories"
                     loading={isLoadingCategory}
